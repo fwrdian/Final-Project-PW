@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Katalog from './components/Katalog';
 import Promo from './components/Promo';
+import KatalogDetail from './components/Katalog_detail';
 
 export default function App() {
   const [cars, setCars] = useState([]);
@@ -26,14 +27,14 @@ export default function App() {
 
   return (
     <div className="size-full overflow-y-auto bg-white font-sans text-slate-900">
-      {/* 1. NAVIGATION (Style Electro) */}
+      {/* 1. NAVIGATION */}
       <Header 
         activePage={activePage} 
         setActivePage={setActivePage} 
         setSearchTerm={setSearchTerm} 
       />
 
-      {/* 2. HERO SECTION (Style Tesla) */}
+      {/* 2. HERO SECTION (Hanya muncul di Home) */}
       {activePage === 'home' && (
         <section className="relative h-screen flex items-center justify-center overflow-hidden bg-black">
           <div className="absolute inset-0">
@@ -49,24 +50,26 @@ export default function App() {
             <h1 className="text-6xl md:text-8xl font-bold tracking-tighter uppercase italic">SUPRA G90</h1>
             <p className="text-lg md:text-xl mt-4 font-light tracking-widest text-slate-300">FUTURE OF PERFORMANCE</p>
             <div className="mt-10 flex gap-4 justify-center">
-              <button className="px-10 py-3 bg-white text-black font-bold uppercase text-xs hover:bg-gray-200 transition-all">Order Now</button>
+              {/* Tombol Order Now kita arahkan ke Katalog Detail */}
+              <button onClick={() => setActivePage('katalog_detail')} className="px-10 py-3 bg-white text-black font-bold uppercase text-xs hover:bg-gray-200 transition-all">Order Now</button>
               <button className="px-10 py-3 border border-white text-white font-bold uppercase text-xs hover:bg-white/10 transition-all">Demo Drive</button>
             </div>
           </div>
         </section>
       )}
 
-      {/* 3. MAIN CONTENT */}
-      <main className="max-w-7xl mx-auto px-6 md:px-8 py-24">
+      {/* 3. MAIN CONTENT AREA */}
+      <main className="max-w-7xl mx-auto px-6 md:px-8 py-24 min-h-screen">
+        
+        {/* LOGIKA HALAMAN HOME */}
         {activePage === 'home' && (
           <>
             <div className="flex justify-between items-end mb-16 border-b border-gray-100 pb-8">
               <div>
-                <h2 className="text-4xl font-bold tracking-tight">Katalog Unit</h2>
+                <h2 className="text-4xl font-bold tracking-tight">Highlight Unit</h2>
                 <p className="text-gray-500 mt-2">Pilih unit masa depan Anda hari ini.</p>
               </div>
               
-              {/* Filter Category Style Electro */}
               <div className="hidden md:flex gap-8 text-xs font-bold uppercase tracking-widest">
                 <button onClick={() => setSelectedCategory('all')} className={selectedCategory === 'all' ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'text-gray-400'}>All Models</button>
                 <button onClick={() => setSelectedCategory('sedan')} className={selectedCategory === 'sedan' ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'text-gray-400'}>Sedan</button>
@@ -78,6 +81,10 @@ export default function App() {
           </>
         )}
 
+        {/* LOGIKA HALAMAN KATALOG DETAIL (Penting!) */}
+        {activePage === 'katalog_detail' && <KatalogDetail />}
+
+        {/* LOGIKA HALAMAN PROMO */}
         {activePage === 'promo' && <Promo />}
       </main>
 
