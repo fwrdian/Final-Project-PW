@@ -5,6 +5,9 @@ import Footer from './components/Footer';
 import Katalog from './components/Katalog';
 import Promo from './components/Promo';
 import KatalogDetail from './components/Katalog_detail';
+import Lokasi from './components/Lokasi';
+import Testimoni from './components/Testimoni';
+import ContactUs from './components/ContactUs';
 
 export default function App() {
   const [cars, setCars] = useState([]);
@@ -86,6 +89,15 @@ export default function App() {
 
         {/* LOGIKA HALAMAN PROMO */}
         {activePage === 'promo' && <Promo />}
+
+        {/* LOGIKA HALAMAN LOKASI & SHOWROOM */}
+        {activePage === 'lokasi' && <Lokasi />}
+
+        {/* LOGIKA HALAMAN TESTIMONI */}
+        {activePage === 'testimoni' && <Testimoni />}
+
+        {/* LOGIKA HALAMAN CONTACT US */}
+        {activePage === 'contact' && <ContactUs />}
       </main>
 
       {/* 4. FOOTER */}
