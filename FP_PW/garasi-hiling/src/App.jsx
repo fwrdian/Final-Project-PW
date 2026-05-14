@@ -5,13 +5,10 @@ import Footer from './components/Footer';
 import Katalog from './components/Katalog';
 import Promo from './components/Promo';
 import KatalogDetail from './components/Katalog_detail';
-<<<<<<< Updated upstream
-=======
 import Lokasi from './components/Lokasi';
 import Testimoni from './components/Testimoni';
 import ContactUs from './components/ContactUs';
 import Tentang from './components/Tentang'; // Import komponen baru
->>>>>>> Stashed changes
 
 export default function App() {
   const [cars, setCars] = useState([]);
@@ -112,10 +109,6 @@ export default function App() {
         {/* HALAMAN KATALOG DETAIL */}
         {activePage === 'katalog_detail' && <KatalogDetail />}
 
-<<<<<<< Updated upstream
-        {/* LOGIKA HALAMAN PROMO */}
-        {activePage === 'promo' && <Promo />}
-=======
         {/* HALAMAN PROMO (Mengirim handleTakePromo) */}
         {activePage === 'promo' && (
           <Promo 
@@ -139,7 +132,6 @@ export default function App() {
             <ContactUs initialMessage={promoMessage} />
           </div>
         )}
->>>>>>> Stashed changes
       </main>
 
       {/* 4. FOOTER */}
