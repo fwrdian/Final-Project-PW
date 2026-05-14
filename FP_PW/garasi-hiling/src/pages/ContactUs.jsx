@@ -1,8 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const ContactUs = () => {
+  // 1. State Management (useState)
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 2. React Logic (useEffect)
+  // Mendeteksi jika user sedang mengetik untuk conditional styling/logic
+  useEffect(() => {
+    if (form.name || form.email || form.phone || form.message) {
+      setIsTyping(true);
+    } else {
+      setIsTyping(false);
+    }
+  }, [form]);
+
+  // Efek untuk menghilangkan notifikasi sukses setelah 3 detik
+  useEffect(() => {
+    if (submitted) {
+      const timer = setTimeout(() => {
+        setSubmitted(false);
+      }, 3000);
+      return () => clearTimeout(timer); // Cleanup fungsi
+    }
+  }, [submitted]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -10,10 +33,14 @@ const ContactUs = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulasi submit
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
-    setForm({ name: '', email: '', phone: '', message: '' });
+    setIsSubmitting(true);
+    
+    // Simulasi request API menggunakan setTimeout
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSubmitted(true);
+      setForm({ name: '', email: '', phone: '', message: '' }); // Reset form
+    }, 1000);
   };
 
   const contactInfo = [
@@ -52,7 +79,7 @@ const ContactUs = () => {
         {contactInfo.map((c) => (
           <div
             key={c.title}
-            className="bg-white border border-gray-100 rounded-xl p-6 text-center"
+            className="bg-white border border-gray-100 rounded-xl p-6 text-center hover:shadow-lg transition-all duration-300"
           >
             <h4 className="font-bold text-sm uppercase tracking-wider mb-1">{c.title}</h4>
             <p className="text-sm font-semibold text-gray-800 mb-1">{c.detail}</p>
@@ -63,13 +90,25 @@ const ContactUs = () => {
 
       {/* Form + Side Info */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-        {/* Form */}
-        <div className="lg:col-span-3 bg-white border border-gray-100 rounded-2xl p-8 md:p-10">
-          <h3 className="text-xl font-bold mb-6">Kirim <span className="text-red-600">Pesan</span></h3>
+        {/* Form Area */}
+        <div className={`lg:col-span-3 bg-white border rounded-2xl p-8 md:p-10 transition-colors duration-500 ${isTyping ? 'border-red-200 shadow-xl shadow-red-50' : 'border-gray-100'}`}>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-bold">Kirim <span className="text-red-600">Pesan</span></h3>
+            {/* 3. Conditional Rendering: Indikator Mengetik */}
+            {isTyping && !isSubmitting && (
+              <span className="text-[10px] uppercase font-bold text-gray-400 tracking-widest animate-pulse">
+                Mengetik...
+              </span>
+            )}
+          </div>
 
+          {/* Conditional Rendering: Alert Sukses */}
           {submitted && (
-            <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm font-medium">
-              Pesan Anda berhasil dikirim! Tim kami akan segera menghubungi Anda.
+            <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm font-medium animate-in slide-in-from-top-2">
+              <span className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                Pesan Anda berhasil dikirim! Tim kami akan segera menghubungi Anda.
+              </span>
             </div>
           )}
 
@@ -84,7 +123,7 @@ const ContactUs = () => {
                   onChange={handleChange}
                   required
                   placeholder="Masukkan nama Anda"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition-all"
                 />
               </div>
               <div>
@@ -122,15 +161,26 @@ const ContactUs = () => {
                 required
                 rows={5}
                 placeholder="Tulis pertanyaan atau pesan Anda di sini..."
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 resize-none"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 resize-none transition-all"
               />
             </div>
 
+            {/* Conditional Rendering: Tombol Loading vs Tombol Submit */}
             <button
               type="submit"
-              className="w-full bg-black text-white py-3.5 text-xs font-bold uppercase tracking-[0.2em] rounded-full shadow-lg shadow-black/10"
+              disabled={isSubmitting}
+              className={`w-full py-3.5 text-xs font-bold uppercase tracking-[0.2em] rounded-full shadow-lg transition-all flex justify-center items-center gap-2 ${
+                isSubmitting 
+                ? 'bg-zinc-800 text-gray-400 cursor-not-allowed shadow-none' 
+                : 'bg-black text-white hover:bg-zinc-800 shadow-black/10 active:scale-95'
+              }`}
             >
-              Kirim Pesan
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Mengirim...
+                </>
+              ) : 'Kirim Pesan'}
             </button>
           </form>
         </div>

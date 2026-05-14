@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-export default function Header({ activePage, setActivePage }) {
+export default function Header() {
   const [openDropdown, setOpenDropdown] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const activePage = location.pathname.substring(1) || 'home'; // simple way to match paths like 'promo' or 'home'
 
   const menuVehicles = [
     { name: 'Supra G90', desc: 'Legendary Sport Coupe' },
@@ -20,34 +25,29 @@ export default function Header({ activePage, setActivePage }) {
     <nav className="fixed top-0 left-0 right-0 z-[100] bg-white/90 backdrop-blur-md border-b border-gray-100 font-sans">
       <div className="max-w-[1440px] mx-auto px-8 py-4 flex items-center justify-between">
         
-        <h1 
-          className="text-xl tracking-[0.1em] font-black italic cursor-pointer select-none text-black" 
-          onClick={() => setActivePage('home')}
-        >
-          GARASI<span className="text-red-600">H</span>
-        </h1>
+        <Link to="/">
+          <h1 
+            className="text-xl tracking-[0.1em] font-black italic cursor-pointer select-none text-black" 
+          >
+            GARASI<span className="text-red-600">H</span>
+          </h1>
+        </Link>
 
         <div className="hidden lg:flex items-center gap-1 text-[14px] font-bold uppercase tracking-widest text-zinc-800">
           
           {/* TOMBOL KATALOG (SEKARANG JADI TOMBOL BIASA) */}
-          <button 
-            onClick={() => setActivePage('katalog_detail')}
+          <Link 
+            to="/katalog"
             className={`px-4 py-2 rounded-md transition-colors ${
-              activePage === 'katalog_detail' 
+              activePage === 'katalog' 
               ? 'text-red-600 bg-gray-50' 
               : 'hover:bg-gray-100 hover:text-red-600'
             }`}
           >
             Katalog
-          </button>
+          </Link>
           
           {/* DROPDOWN SHOP (TETAP ADA KARENA BIASANYA BANYAK ITEM) */}
-          <div 
-            className="relative"
-            onMouseEnter={() => setOpenDropdown('shop')}
-            onMouseLeave={() => setOpenDropdown(null)}
-          ></div>
-          
           <div 
             className="relative"
             onMouseEnter={() => setOpenDropdown('shop')}
@@ -63,19 +63,19 @@ export default function Header({ activePage, setActivePage }) {
             {openDropdown === 'shop' && (
               <div className="absolute top-full left-0 w-64 bg-white shadow-2xl border border-gray-100 py-3 mt-1 rounded-xl animate-in fade-in slide-in-from-top-2">
                 {menuShop.map((item) => (
-                  <button key={item.name} className="w-full text-left px-6 py-3 hover:bg-gray-50 transition-colors group">
+                  <Link key={item.name} to="/katalog" className="block w-full text-left px-6 py-3 hover:bg-gray-50 transition-colors group">
                     <div className="font-black text-xs group-hover:text-red-600 uppercase tracking-widest">{item.name}</div>
                     <div className="text-[10px] text-gray-400 font-medium normal-case">{item.desc}</div>
-                  </button>
+                  </Link>
                 ))}
               </div>
             )}
           </div>
 
-          <button onClick={() => setActivePage('promo')} className={`px-4 py-2 rounded-md transition-colors ${activePage === 'promo' ? 'text-red-600 bg-gray-50' : 'hover:bg-gray-100 hover:text-red-600'}`}>Promo Mei</button>
-          <button onClick={() => setActivePage('lokasi')} className={`px-4 py-2 rounded-md transition-colors ${activePage === 'lokasi' ? 'text-red-600 bg-gray-50' : 'hover:bg-gray-100 hover:text-red-600'}`}>Lokasi</button>
-          <button onClick={() => setActivePage('testimoni')} className={`px-4 py-2 rounded-md transition-colors ${activePage === 'testimoni' ? 'text-red-600 bg-gray-50' : 'hover:bg-gray-100 hover:text-red-600'}`}>Testimoni</button>
-          <button onClick={() => setActivePage('contact')} className={`px-4 py-2 rounded-md transition-colors ${activePage === 'contact' ? 'text-red-600 bg-gray-50' : 'hover:bg-gray-100 hover:text-red-600'}`}>Contact</button>
+          <Link to="/promo" className={`px-4 py-2 rounded-md transition-colors ${activePage === 'promo' ? 'text-red-600 bg-gray-50' : 'hover:bg-gray-100 hover:text-red-600'}`}>Promo Mei</Link>
+          <Link to="/lokasi" className={`px-4 py-2 rounded-md transition-colors ${activePage === 'lokasi' ? 'text-red-600 bg-gray-50' : 'hover:bg-gray-100 hover:text-red-600'}`}>Lokasi</Link>
+          <Link to="/testimoni" className={`px-4 py-2 rounded-md transition-colors ${activePage === 'testimoni' ? 'text-red-600 bg-gray-50' : 'hover:bg-gray-100 hover:text-red-600'}`}>Testimoni</Link>
+          <Link to="/contact" className={`px-4 py-2 rounded-md transition-colors ${activePage === 'contact' ? 'text-red-600 bg-gray-50' : 'hover:bg-gray-100 hover:text-red-600'}`}>Contact</Link>
         </div>
 
         <div className="flex items-center gap-2 md:gap-4">
@@ -100,7 +100,7 @@ export default function Header({ activePage, setActivePage }) {
           </button>
 
           <button 
-            onClick={() => setActivePage('katalog_detail')}
+            onClick={() => navigate('/katalog')}
             className="bg-black text-white px-8 py-2.5 text-[11px] font-bold uppercase tracking-[0.2em] rounded-full hover:bg-zinc-800 transition-all active:scale-95 ml-2 shadow-lg shadow-black/10"
           >
             Order
