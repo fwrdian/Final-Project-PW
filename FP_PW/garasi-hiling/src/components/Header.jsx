@@ -72,9 +72,10 @@ export default function Header({ activePage, setActivePage }) {
             )}
           </div>
 
-          <button onClick={() => setActivePage('promo')} className={`px-4 py-2 rounded-md transition-colors ${activePage === 'promo' ? 'text-red-600' : 'hover:bg-gray-100'}`}>Promo Mei</button>
-          <button className="px-4 py-2 hover:bg-gray-100 rounded-md transition-colors">Servis</button>
-          <button onClick={() => setActivePage('tentang')} className={`px-4 py-2 rounded-md transition-colors ${activePage === 'tentang' ? 'text-red-600' : 'hover:bg-gray-100'}`}>Tentang</button>
+          <button onClick={() => setActivePage('promo')} className={`px-4 py-2 rounded-md transition-colors ${activePage === 'promo' ? 'text-red-600 bg-gray-50' : 'hover:bg-gray-100 hover:text-red-600'}`}>Promo Mei</button>
+          <button onClick={() => setActivePage('lokasi')} className={`px-4 py-2 rounded-md transition-colors ${activePage === 'lokasi' ? 'text-red-600 bg-gray-50' : 'hover:bg-gray-100 hover:text-red-600'}`}>Lokasi</button>
+          <button onClick={() => setActivePage('testimoni')} className={`px-4 py-2 rounded-md transition-colors ${activePage === 'testimoni' ? 'text-red-600 bg-gray-50' : 'hover:bg-gray-100 hover:text-red-600'}`}>Testimoni</button>
+          <button onClick={() => setActivePage('contact')} className={`px-4 py-2 rounded-md transition-colors ${activePage === 'contact' ? 'text-red-600 bg-gray-50' : 'hover:bg-gray-100 hover:text-red-600'}`}>Contact</button>
         </div>
 
         <div className="flex items-center gap-2 md:gap-4">

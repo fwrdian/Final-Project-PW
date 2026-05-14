@@ -1,48 +1,6 @@
 import React from 'react';
 
-const Footer = ({ setActivePage }) => {
-  // Data Sosmed dengan Ikon SVG
-  const socialMedia = [
-    { 
-      name: 'Instagram', 
-      url: 'https://www.instagram.com/hilingsemata/', 
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-        </svg>
-      )
-    },
-    { 
-      name: 'Youtube', 
-      url: 'https://youtube.com', 
-      icon: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-        </svg>
-      )
-    },
-    { 
-      name: 'Facebook', 
-      url: 'https://facebook.com', 
-      icon: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-        </svg>
-      )
-    },
-    { 
-      name: 'TikTok', 
-      url: 'https://www.tiktok.com/@xionn_._', 
-      icon: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 448 512">
-          <path d="M448 209.91a210.06 210.06 0 0 1-122.77-39.25V349.38A162.55 162.55 0 1 1 185 188.31V278.2a74.62 74.62 0 1 0 52.23 71.18V0l88 0a121.18 121.18 0 0 0 1.86 22.17h0A122.18 122.18 0 0 0 381 102.39a121.43 121.43 0 0 0 67 20.14Z"/>
-        </svg>
-      )
-    }
-  ];
-
+const Footer = () => {
   return (
     <footer className="w-full bg-[#1a1a1a] text-white py-16 px-6 md:px-20 font-sans border-t-4 border-red-600">
       <div className="max-w-7xl mx-auto">
@@ -58,9 +16,7 @@ const Footer = ({ setActivePage }) => {
               <p>Jl. Ring Road Utara, Condongcatur, Kec. Depok, Kabupaten Sleman, Daerah Istimewa Yogyakarta 55281</p>
               <div className="pt-2">
                 <p className="flex items-center gap-2"><span className="text-red-600 font-bold">WA:</span> +62 87756563631</p>
-                <p className="flex items-center gap-2 text-xs md:text-sm truncate">
-                  <span className="text-red-600 font-bold">Email:</span> perdiansyah6797@students.amikom.ac.id
-                </p>
+                <p className="flex items-center gap-2"><span className="text-red-600 font-bold">Email:</span> perdiansyah6797@students.amikom.ac.id</p>
               </div>
             </div>
           </div>
@@ -71,52 +27,25 @@ const Footer = ({ setActivePage }) => {
               Produk Kami
             </h4>
             <ul className="space-y-4 text-sm text-gray-400 font-medium">
-              <li><button onClick={() => setActivePage('home')} className="hover:text-red-600 transition-colors uppercase">GR Supra</button></li>
-              <li><button onClick={() => setActivePage('home')} className="hover:text-red-600 transition-colors uppercase">Land Cruiser</button></li>
-              <li><button onClick={() => setActivePage('home')} className="hover:text-red-600 transition-colors uppercase">Crown Hybrid</button></li>
-              <li><button onClick={() => setActivePage('home')} className="hover:text-red-600 transition-colors uppercase">GR Yaris</button></li>
-              <li><button onClick={() => setActivePage('home')} className="hover:text-red-600 transition-colors uppercase">All New Avanza</button></li>
+              <li><a href="#" className="hover:text-red-600 transition-colors uppercase">GR Supra</a></li>
+              <li><a href="#" className="hover:text-red-600 transition-colors uppercase">Land Cruiser</a></li>
+              <li><a href="#" className="hover:text-red-600 transition-colors uppercase">Crown Hybrid</a></li>
+              <li><a href="#" className="hover:text-red-600 transition-colors uppercase">GR Yaris</a></li>
+              <li><a href="#" className="hover:text-red-600 transition-colors uppercase">All New Avanza</a></li>
             </ul>
           </div>
 
-          {/* --- BAGIAN PERUSAHAAN & LAYANAN --- */}
+          {/* --- BAGIAN LAYANAN --- */}
           <div>
             <h4 className="text-sm font-black uppercase tracking-widest mb-8 border-b border-red-600 pb-2 inline-block">
-              Perusahaan
+              Layanan Purna Jual
             </h4>
             <ul className="space-y-4 text-sm text-gray-400 font-medium">
-              <li>
-                <button 
-                  onClick={() => setActivePage('tentang')} 
-                  className="hover:text-red-600 transition-colors uppercase text-left"
-                >
-                  Tentang Kami
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => setActivePage('lokasi')} 
-                  className="hover:text-red-600 transition-colors uppercase text-left"
-                >
-                  Lokasi Dealer
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => setActivePage('contact')} 
-                  className="hover:text-red-600 transition-colors uppercase text-left"
-                >
-                  Booking Service
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => setActivePage('testimoni')} 
-                  className="hover:text-red-600 transition-colors uppercase text-left"
-                >
-                  Testimoni
-                </button>
-              </li>
+              <li><a href="#" className="hover:text-red-600 transition-colors uppercase">Booking Service</a></li>
+              <li><a href="#" className="hover:text-red-600 transition-colors uppercase">Suku Cadang Asli</a></li>
+              <li><a href="#" className="hover:text-red-600 transition-colors uppercase">Kalkulator Kredit</a></li>
+              <li><a href="#" className="hover:text-red-600 transition-colors uppercase">Tukar Tambah</a></li>
+              <li><a href="#" className="hover:text-red-600 transition-colors uppercase">Test Drive</a></li>
             </ul>
           </div>
 
@@ -126,17 +55,15 @@ const Footer = ({ setActivePage }) => {
               Ikuti Kami
             </h4>
             <div className="flex gap-4">
-              {socialMedia.map((social) => (
+              {['Instagram', 'Youtube', 'Facebook', 'TikTok'].map((sosmed) => (
                 <a 
-                  key={social.name} 
-                  href={social.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-white/5 hover:bg-red-600 rounded-lg flex items-center justify-center transition-all group"
-                  title={social.name}
+                  key={sosmed} 
+                  href="#" 
+                  className="w-10 h-10 bg-white/10 hover:bg-red-600 rounded-lg flex items-center justify-center transition-all group"
+                  title={sosmed}
                 >
-                  <div className="text-white group-hover:scale-110 transition-transform">
-                    {social.icon}
+                  <div className="text-[10px] font-black uppercase italic">
+                    {sosmed.substring(0, 2)}
                   </div>
                 </a>
               ))}
@@ -149,12 +76,12 @@ const Footer = ({ setActivePage }) => {
 
         {/* --- BOTTOM BAR --- */}
         <div className="pt-10 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest text-center md:text-left">
+          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
             © 2026 TOYOTA GARASI YOGYAKARTA. MEMBER OF HILING SEMATA GROUP.
           </p>
           <div className="flex gap-8 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-            <button onClick={() => setActivePage('tentang')} className="hover:text-white transition-colors">Syarat & Ketentuan</button>
-            <button onClick={() => setActivePage('tentang')} className="hover:text-white transition-colors">Kebijakan Privasi</button>
+            <a href="#" className="hover:text-white transition-colors">Syarat & Ketentuan</a>
+            <a href="#" className="hover:text-white transition-colors">Kebijakan Privasi</a>
           </div>
         </div>
       </div>
