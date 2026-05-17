@@ -6,9 +6,9 @@ import Footer from './components/Footer';
 import Katalog from './components/Katalog';
 import Promo from './components/Promo';
 import KatalogDetail from './components/Katalog_detail';
-import Lokasi from './components/Lokasi';
-import Testimoni from './components/Testimoni';
-import ContactUs from './components/ContactUs';
+import Lokasi from './pages/Lokasi';
+import Testimoni from './pages/Testimoni';
+import ContactUs from './pages/ContactUs';
 import Tentang from './components/Tentang';
 
 export default function App() {
@@ -16,10 +16,10 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  
+
   // State untuk menampung pesan promo otomatis
   const [promoMessage, setPromoMessage] = useState('');
-  
+
   // Hook untuk pindah halaman secara programmatik
   const navigate = useNavigate();
 
@@ -47,7 +47,7 @@ export default function App() {
 
   return (
     <div className="size-full h-screen overflow-y-auto bg-white font-sans text-slate-900 scroll-smooth">
-      
+
       {/* 1. NAVIGATION */}
       <Header setSearchTerm={setSearchTerm} />
 
@@ -59,8 +59,8 @@ export default function App() {
             <>
               <section className="relative h-screen flex items-center justify-center overflow-hidden bg-black">
                 <div className="absolute inset-0">
-                  <img 
-                    src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2940" 
+                  <img
+                    src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2940"
                     className="w-full h-full object-cover opacity-50"
                     alt="Hero Background"
                   />
@@ -70,8 +70,8 @@ export default function App() {
                   <h1 className="text-6xl md:text-8xl font-bold tracking-tighter uppercase italic">SUPRA G90</h1>
                   <p className="text-lg md:text-xl mt-4 font-light tracking-widest text-slate-300">FUTURE OF PERFORMANCE</p>
                   <div className="mt-10 flex gap-4 justify-center">
-                    <button 
-                      onClick={() => navigate('/katalog-detail')} 
+                    <button
+                      onClick={() => navigate('/katalog-detail')}
                       className="px-10 py-3 bg-white text-black font-bold uppercase text-xs hover:bg-red-600 hover:text-white transition-all"
                     >
                       Order Now
@@ -102,7 +102,7 @@ export default function App() {
 
           {/* --- ROUTE LAINNYA --- */}
           <Route path="/katalog-detail" element={<KatalogDetail />} />
-          
+
           <Route path="/promo" element={
             <div className="py-12">
               <Promo onTakePromo={handleTakePromo} />
@@ -112,7 +112,7 @@ export default function App() {
           <Route path="/tentang" element={<Tentang />} />
           <Route path="/lokasi" element={<Lokasi />} />
           <Route path="/testimoni" element={<Testimoni />} />
-          
+
           <Route path="/contact" element={
             <div className="max-w-7xl mx-auto px-6 py-24">
               <ContactUs initialMessage={promoMessage} />

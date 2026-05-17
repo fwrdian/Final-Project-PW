@@ -6,6 +6,9 @@ const Lokasi = () => {
       <div className="text-center mb-16">
         <p className="text-red-600 text-xs font-bold uppercase tracking-[0.3em] mb-3">Kunjungi Kami</p>
         <h2 className="text-4xl md:text-5xl font-black tracking-tight uppercase italic">Lokasi & <span className="text-red-600">Showroom</span></h2>
+        <p className="text-gray-500 mt-4 max-w-xl mx-auto">
+          Temukan dealer resmi Garasi Hiling terdekat. Kami siap melayani Anda dengan fasilitas terbaik.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
