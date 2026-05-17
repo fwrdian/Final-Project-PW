@@ -113,6 +113,7 @@ const Footer = () => {
             © 2026 TOYOTA GARASI YOGYAKARTA. MEMBER OF HILING SEMATA GROUP.
           </p>
           <div className="flex gap-8 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+            <Link to="/faq" className="hover:text-white transition-colors"> FAQ </Link>
             <Link to="/tentang" className="hover:text-white transition-colors">Syarat & Ketentuan</Link>
             <Link to="/tentang" className="hover:text-white transition-colors">Kebijakan Privasi</Link>
           </div>

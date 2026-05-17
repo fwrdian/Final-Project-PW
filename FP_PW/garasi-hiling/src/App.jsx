@@ -10,6 +10,9 @@ import Lokasi from './components/Lokasi';
 import Testimoni from './components/Testimoni';
 import ContactUs from './components/ContactUs';
 import Tentang from './components/Tentang';
+import Servis from './components/Servis';
+import Profile from './components/Profile';
+import FAQ from './components/Faq';
 
 export default function App() {
   const [cars, setCars] = useState([]);
@@ -112,7 +115,10 @@ export default function App() {
           <Route path="/tentang" element={<Tentang />} />
           <Route path="/lokasi" element={<Lokasi />} />
           <Route path="/testimoni" element={<Testimoni />} />
-          
+          <Route path="/servis" element={<Servis />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/faq" element={<FAQ />} />
+
           <Route path="/contact" element={
             <div className="max-w-7xl mx-auto px-6 py-24">
               <ContactUs initialMessage={promoMessage} />

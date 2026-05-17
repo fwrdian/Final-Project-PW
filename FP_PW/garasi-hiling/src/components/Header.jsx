@@ -38,6 +38,7 @@ export default function Header() {
           <NavLink to="/lokasi" className={navStyle}>Lokasi</NavLink>
           <NavLink to="/testimoni" className={navStyle}>Testimoni</NavLink>
           <NavLink to="/contact" className={navStyle}>Contact</NavLink>
+          <NavLink to="/servis" className={navStyle}>Servis</NavLink>
         </div>
 
         {/* --- BAGIAN KANAN YANG TADI HILANG (DI SINI) --- */}
@@ -59,12 +60,15 @@ export default function Header() {
           </button>
 
           {/* Icon Akun */}
-          <button className="hidden sm:flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md transition-colors text-zinc-700">
+          <Link 
+            to="/profile" 
+            className="hidden sm:flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md transition-colors text-zinc-700"
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
             <span className="text-[11px] font-bold uppercase tracking-widest">Akun</span>
-          </button>
+          </Link>
 
           {/* Tombol ORDER Hitam */}
           <Link 
