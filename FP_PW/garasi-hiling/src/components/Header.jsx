@@ -63,6 +63,7 @@ export default function Header({ setSearchTerm }) {
   <NavLink to="/" className={navStyle}>Home</NavLink>
   <NavLink to="/katalog-detail" className={navStyle}>Katalog</NavLink>
   
+  
   {/* DROPDOWN 1: BELANJA */}
   <div 
     className="relative"
@@ -75,7 +76,6 @@ export default function Header({ setSearchTerm }) {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
       </svg>
     </button>
-
     {openDropdown === 'shop' && (
       <div className="absolute top-full left-0 w-64 bg-white shadow-2xl border border-gray-100 py-3 mt-1 rounded-xl animate-in fade-in slide-in-from-top-2">
         {menuShop.map((item) => (
@@ -85,6 +85,7 @@ export default function Header({ setSearchTerm }) {
           </button>
         ))}
       </div>
+      
     )}
   </div>
 
@@ -119,6 +120,8 @@ export default function Header({ setSearchTerm }) {
       </div>
     )}
   </div>
+  <NavLink to="/servis" className={navStyle}>Servis</NavLink>
+  <NavLink to="/faq" className={navStyle}>FAQ</NavLink>
 
 </div>
 
@@ -138,12 +141,16 @@ export default function Header({ setSearchTerm }) {
             <span className="absolute top-1 right-1 w-2 h-2 bg-red-600 rounded-full border border-white"></span>
           </button>
 
-          <button className="hidden sm:flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md transition-colors text-zinc-700">
+          {/* Icon Akun */}
+          <Link 
+            to="/profile" 
+            className="hidden sm:flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md transition-colors text-zinc-700"
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
             <span className="text-[11px] font-bold uppercase tracking-widest">Akun</span>
-          </button>
+          </Link>
 
           <Link 
             to="/katalog-detail"

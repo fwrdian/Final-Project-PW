@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Routes, Route, useNavigate } from 'react-router-dom'; // Tambahkan ini
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Katalog from './components/Katalog';
@@ -10,12 +10,15 @@ import Lokasi from './pages/Lokasi';
 import Testimoni from './pages/Testimoni';
 import ContactUs from './pages/ContactUs';
 import Tentang from './components/Tentang';
+import Servis from './components/Servis';
+import Profile from './components/Profile';
+import FAQ from './components/Faq';
+import ScrollToTop from './components/ScrollToTop';
 
 export default function App() {
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
 
   // State untuk menampung pesan promo otomatis
   const [promoMessage, setPromoMessage] = useState('');
@@ -46,12 +49,14 @@ export default function App() {
   );
 
   return (
-    <div className="size-full h-screen overflow-y-auto bg-white font-sans text-slate-900 scroll-smooth">
+  <div className="w-full bg-white font-sans text-slate-900 scroll-smooth">
+      {/* 1. SCROLL MANAGEMENT TO TOP */}
+      <ScrollToTop />
 
-      {/* 1. NAVIGATION */}
+      {/* 2. NAVIGATION (Selalu muncul di atas) */}
       <Header setSearchTerm={setSearchTerm} />
 
-      {/* 2. MAIN CONTENT AREA MENGGUNAKAN ROUTES */}
+      {/* 3. MAIN CONTENT AREA MENGGUNAKAN ROUTES */}
       <main className="min-h-screen">
         <Routes>
           {/* --- HALAMAN HOME --- */}
@@ -76,7 +81,6 @@ export default function App() {
                     >
                       Order Now
                     </button>
-                    
                   </div>
                 </div>
               </section>
@@ -105,6 +109,9 @@ export default function App() {
           <Route path="/tentang" element={<Tentang />} />
           <Route path="/lokasi" element={<Lokasi />} />
           <Route path="/testimoni" element={<Testimoni />} />
+          <Route path="/servis" element={<Servis />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/faq" element={<FAQ />} />
 
           <Route path="/contact" element={
             <div className="max-w-7xl mx-auto px-6 py-24">
@@ -114,7 +121,7 @@ export default function App() {
         </Routes>
       </main>
 
-      {/* 4. FOOTER */}
+      {/* 4. FOOTER (Selalu muncul di bawah) */}
       <Footer />
     </div>
   );
