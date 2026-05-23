@@ -60,7 +60,7 @@ const Footer = () => {
                   <span className="text-red-600 font-bold">WA:</span> +62 87756563631
                 </p>
                 <p className="flex items-center gap-2 text-xs md:text-sm truncate font-medium">
-                  <span className="text-red-600 font-bold">Email:</span> perdiansyah6797@students.amikom.ac.id
+                  <span className="text-red-600 font-bold">Email:</span> perdiansyah6797@gmail.com
                 </p>
               </div>
             </div>
