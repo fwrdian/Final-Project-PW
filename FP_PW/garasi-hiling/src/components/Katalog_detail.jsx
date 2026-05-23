@@ -17,7 +17,7 @@ const KatalogDetail = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get('https://6a11dfb43e35d0f37ee3c8c8.mockapi.io/api/v1/katalog');
+        const response = await axios.get('https://6a11f1ef3e35d0f37ee3d6d8.mockapi.io/api/v1/katalog');
         setAllVehicles(response.data);
       } catch (error) {
         console.error("Gagal mengambil data mobil:", error);

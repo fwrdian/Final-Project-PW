@@ -60,7 +60,7 @@ export default function App() {
               <section className="relative h-screen flex items-center justify-center overflow-hidden bg-black">
                 <div className="absolute inset-0">
                   <img
-                    src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2940"
+                    src="https://eternamotorworks.com/cdn/shop/files/supraa90collectioncover.jpg?v=1738037689&width=2000"
                     className="w-full h-full object-cover opacity-50"
                     alt="Hero Background"
                   />
@@ -76,9 +76,7 @@ export default function App() {
                     >
                       Order Now
                     </button>
-                    <button className="px-10 py-3 border border-white text-white font-bold uppercase text-xs hover:bg-white/10 transition-all">
-                      Demo Drive
-                    </button>
+                    
                   </div>
                 </div>
               </section>
@@ -88,11 +86,6 @@ export default function App() {
                   <div>
                     <h2 className="text-4xl font-bold tracking-tight uppercase italic">Highlight <span className="text-red-600">Unit</span></h2>
                     <p className="text-gray-500 mt-2">Pilih unit masa depan Anda hari ini.</p>
-                  </div>
-                  <div className="hidden md:flex gap-8 text-xs font-bold uppercase tracking-widest text-gray-400">
-                    <button onClick={() => setSelectedCategory('all')}>All Models</button>
-                    <button onClick={() => setSelectedCategory('sedan')}>Sedan</button>
-                    <button onClick={() => setSelectedCategory('suv')}>SUV</button>
                   </div>
                 </div>
                 <Katalog cars={filteredCars} loading={loading} />
