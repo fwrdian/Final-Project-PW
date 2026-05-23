@@ -1,24 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import axios from 'axios'; // 1. Import Axios
 
 const KatalogDetail = () => {
   const [filter, setFilter] = useState('all');
   const [showModal, setShowModal] = useState(false);
   const [activeCar, setActiveCar] = useState(null);
+  
+  // 2. Tambahkan state untuk menampung data dari API & loading
+  const [allVehicles, setAllVehicles] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { pathname } = useLocation();
+
+  // 3. Fungsi untuk mengambil data (Fetch Data)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get('https://6a11dfb43e35d0f37ee3c8c8.mockapi.io/api/v1/katalog');
+        setAllVehicles(response.data);
+      } catch (error) {
+        console.error("Gagal mengambil data mobil:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const allVehicles = [
-    { id: 1, name: "GR Supra RT", category: "sport", price: "Rp 1.649.250.000", img: 'foto/supra.jpg', engine: "3.0L B58 Inline-6", power: "382 HP", seat: "2-Seater", stock: "2" },
-    { id: 4, name: "GR Yaris Facelift", category: "sport", price: "Rp 1.150.000.000", img: 'foto/gr.jpg', engine: "1.6L G16E-GTS Turbo", power: "304 HP", seat: "4-Seater", stock: "1" },
-    { id: 2, name: "Land Cruiser 300", category: "suv", price: "Rp 2.583.100.000", img: 'foto/land.jpg', engine: "3.3L V6 Diesel", power: "305 HP", seat: "7-Seater", stock: "3" },
-    { id: 3, name: "Crown Sport", category: "suv", price: "Rp 1.250.000.000", img: 'foto/crown.jpg', engine: "2.5L Hybrid PHEV", power: "302 HP", seat: "5-Seater", stock: "2" },
-    { id: 6, name: "Century SUV", category: "suv", price: "Rp 3.500.000.000", img: 'foto/century.jpg', engine: "3.5L V6 Plug-in Hybrid", power: "406 HP", seat: "4-Seater", stock: "3" },
-    { id: 5, name: "Alphard HEV", category: "mpv", price: "Rp 1.710.000.000", img: 'foto/alphardd.jpg', engine: "2.5L A25A-FXS Hybrid", power: "247 HP", seat: "7-Seater", stock: "0" },
-  ];
+  // --- RENDER LOADING STATE ---
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
+        <span className="ml-4 font-bold uppercase tracking-widest text-slate-400">Loading Lineup...</span>
+      </div>
+    );
+  }
+
+  // --- (Fungsi renderAllCategory, renderSportCategory, dll tetap sama) ---
+  // Pastikan nama property di API (engine, power, seat, dll) sama dengan yang ada di kodingan.
+  
+  // ... (Sisa kodingan render kamu di bawah tetap sama)
 
   // --- 0. RENDER ALL CATEGORY (CLEAN 3-COLUMN GRID) ---
   const renderAllCategory = () => {
