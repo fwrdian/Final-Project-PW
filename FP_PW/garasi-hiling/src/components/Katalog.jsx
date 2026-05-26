@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Katalog = ({ cars }) => {
+const Katalog = ({ cars, loading, searchTerm }) => {
   const [allVehicles, setAllVehicles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -26,14 +26,16 @@ const Katalog = ({ cars }) => {
     fetchHomeData();
   }, []);
 
-  // Sinkronisasi dengan fitur Live Search dari Navbar
-  // Jika ada pencarian dari navbar (cars memiliki filter), kita pakai data dari props.
-  // Jika tidak ada pencarian, kita tampilkan 4 unit pertama saja dari API untuk halaman Home.
-  const displayVehicles = cars && cars.length < 12 
-    ? cars 
-    : allVehicles.slice(0, 4); // Hanya menampilkan setengah/sebagian saja (4 unit pertama)
+  // LOGIKA LIVE SEARCH SINKRON:
+  // Jika user sedang mengetik di Navbar (searchTerm tidak kosong), lakukan filter ke data MockAPI.
+  // Jika tidak sedang mengetik, potong array dan tampilkan 4 unit utama saja untuk highlight Home.
+  const displayVehicles = searchTerm && searchTerm.trim() !== ""
+    ? allVehicles.filter(unit => 
+        unit.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        unit.category.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : allVehicles.slice(0, 4);
 
-  // Fungsi saat tombol "Order Unit" atau "Pesan" diklik lari ke halaman kontak
   const handleOrder = (car) => {
     navigate('/contact', { 
       state: { message: `Halo GarasiHiling, saya tertarik untuk memesan unit ${car.name}. Mohon info prosedur dan ketersediaan stoknya.` } 
@@ -41,7 +43,7 @@ const Katalog = ({ cars }) => {
     setShowModal(false);
   };
 
-  if (isLoading) {
+  if (isLoading || loading) {
     return (
       <div className="py-20 text-center">
         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-red-600 mx-auto"></div>
@@ -58,7 +60,11 @@ const Katalog = ({ cars }) => {
           <h3 className="text-4xl font-black italic uppercase tracking-tight">
             Highlight <span className="text-red-600 underline">Unit</span>
           </h3>
-          <p className="text-slate-500 text-sm mt-2">Pilihan unit premium terbaik untuk perjalanan Anda.</p>
+          {searchTerm && (
+            <p className="text-sm text-slate-400 mt-2">
+              Menampilkan hasil pencarian untuk: <span className="text-red-600 font-bold">"{searchTerm}"</span> ({displayVehicles.length} ditemukan)
+            </p>
+          )}
         </div>
         <button 
           onClick={() => navigate('/katalog-detail')} 
@@ -68,7 +74,15 @@ const Katalog = ({ cars }) => {
         </button>
       </div>
 
-      {/* --- GRID KATALOG (STRUKTUR SAMA DENGAN KATALOG DETAIL) --- */}
+      {/* --- KONDISI JIKA HASIL PENCARIAN KOSONG --- */}
+      {displayVehicles.length === 0 && (
+        <div className="text-center py-20 border border-dashed border-slate-200 rounded-3xl">
+          <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Mohon Maaf, Unit Tidak Ditemukan</p>
+          <p className="text-xs text-slate-400 mt-1">Coba gunakan kata kunci model kendaraan lain.</p>
+        </div>
+      )}
+
+      {/* --- GRID KATALOG --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10">
         {displayVehicles.map((unit) => (
           <div 
@@ -128,7 +142,7 @@ const Katalog = ({ cars }) => {
         ))}
       </div>
 
-      {/* --- MODAL POP-UP (STRUKTUR SAMA DENGAN KATALOG DETAIL) --- */}
+      {/* --- MODAL POP-UP --- */}
       {showModal && activeCar && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div className="absolute inset-0 bg-black/95 backdrop-blur-sm" onClick={() => setShowModal(false)} />
