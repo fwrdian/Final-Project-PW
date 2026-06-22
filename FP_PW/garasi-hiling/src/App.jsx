@@ -14,39 +14,42 @@ import Servis from './components/Servis';
 import Profile from './components/Profile';
 import FAQ from './components/Faq';
 import ScrollToTop from './components/ScrollToTop';
+import Login from "./components/Login";
+import Register from "./components/Register"; 
 
 export default function App() {
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userAccount, setUserAccount] = useState(null);
+
+  // State untuk menampung pesan promo otomatis
   const [promoMessage, setPromoMessage] = useState('');
+
+  // Hook untuk pindah halaman secara programmatik
   const navigate = useNavigate();
 
-  // MENGUBAH API UTAMA: Mengambil seluruh lineup mobil dari endpoint katalog asli
   useEffect(() => {
-    const fetchGlobalVehicles = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get('https://6a11f1ef3e35d0f37ee3d6d8.mockapi.io/api/v1/katalog');
-        setCars(response.data);
-      } catch (error) {
-        console.error("Gagal sinkronisasi API Utama Showroom:", error);
-      } finally {
+    axios.get('https://fakestoreapi.com/products?limit=12')
+      .then(res => {
+        setCars(res.data);
         setLoading(false);
-      }
-    };
-
-    fetchGlobalVehicles();
+      })
+      .catch(err => {
+        console.error("Gagal mengambil data:", err);
+        setLoading(false);
+      });
   }, []);
 
+  // Fungsi untuk menangani klik "Ambil Promo"
   const handleTakePromo = (promoTitle) => {
     setPromoMessage(`Halo GarasiHiling, saya tertarik dengan promo: ${promoTitle}. Mohon info selengkapnya.`);
-    navigate('/contact');
+    navigate('/contact'); 
   };
 
-  // Live Search menyaring data nama (unit.name) dari MockAPI katalog
   const filteredCars = cars.filter(car =>
-    car.name.toLowerCase().includes(searchTerm.toLowerCase())
+    car.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -76,7 +79,10 @@ export default function App() {
                   <h1 className="text-6xl md:text-8xl font-bold tracking-tighter uppercase italic">SUPRA G90</h1>
                   <p className="text-lg md:text-xl mt-4 font-light tracking-widest text-slate-300">FUTURE OF PERFORMANCE</p>
                   <div className="mt-10 flex gap-4 justify-center">
-                    <button onClick={() => navigate('/katalog-detail')} className="px-10 py-3 bg-white text-black font-bold uppercase text-xs hover:bg-red-600 hover:text-white transition-all">
+                    <button
+                      onClick={() => navigate('/katalog-detail')}
+                      className="px-10 py-3 bg-white text-black font-bold uppercase text-xs hover:bg-red-600 hover:text-white transition-all"
+                    >
                       Order Now
                     </button>
                   </div>
@@ -84,14 +90,23 @@ export default function App() {
               </section>
 
               <div className="max-w-7xl mx-auto px-6 md:px-8 py-24">
-                {/* Menyalurkan filteredCars yang sudah berbasis data MockAPI */}
-                <Katalog cars={filteredCars} loading={loading} searchTerm={searchTerm} />
+                <div className="flex justify-between items-end mb-16 border-b border-gray-100 pb-8">
+                  <div>
+                    <h2 className="text-4xl font-bold tracking-tight uppercase italic">Highlight <span className="text-red-600">Unit</span></h2>
+                    <p className="text-gray-500 mt-2">Pilih unit masa depan Anda hari ini.</p>
+                  </div>
+                </div>
+                <Katalog cars={filteredCars} loading={loading} isLoggedIn={isLoggedIn} />
               </div>
             </>
           } />
 
-          {/* --- HALAMAN KATALOG DETAIL DENGAN SINKRONISASI SEARCH TERM --- */}
-          <Route path="/katalog-detail" element={<KatalogDetail searchTerm={searchTerm} />} />
+          {/* --- ROUTE LAINNYA --- */}
+          <Route path="/katalog-detail" element={<KatalogDetail isLoggedIn={isLoggedIn} />} />
+          
+          {/* Halaman Otentikasi */}
+          <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUserAccount={setUserAccount} />} />
+          <Route path="/register" element={<Register />} />
 
           <Route path="/promo" element={
             <div className="py-12">
@@ -103,7 +118,20 @@ export default function App() {
           <Route path="/lokasi" element={<Lokasi />} />
           <Route path="/testimoni" element={<Testimoni />} />
           <Route path="/servis" element={<Servis />} />
-          <Route path="/profile" element={<Profile />} />
+          
+          {/* Halaman Profile */}
+          <Route 
+            path="/profile" 
+            element={
+              <Profile 
+                isLoggedIn={isLoggedIn} 
+                userAccount={userAccount} 
+                setIsLoggedIn={setIsLoggedIn} 
+                setUserAccount={setUserAccount} 
+              />
+            } 
+          />
+          
           <Route path="/faq" element={<FAQ />} />
 
           <Route path="/contact" element={
@@ -114,6 +142,7 @@ export default function App() {
         </Routes>
       </main>
 
+      {/* 4. FOOTER (Selalu muncul di bawah) */}
       <Footer />
     </div>
   );
