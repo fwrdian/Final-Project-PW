@@ -23,30 +23,28 @@ const Testimoni = () => {
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Implementasi useEffect untuk memuat data dari API
+  // Ambil data dari backend API
   useEffect(() => {
-    // Ambil data minimal 10 item dari Public API (mengambil 12 agar pas untuk grid)
-    axios.get('https://jsonplaceholder.typicode.com/comments?_limit=12')
+    axios.get('http://localhost:3000/api/testimoni')
       .then((res) => {
         const formattedData = res.data.map((item, index) => ({
-          id: item.id,
-          name: item.email.split('@')[0], // Gunakan bagian depan email sebagai nama
-          role: 'Pelanggan GarasiH',
-          avatar: item.email.substring(0, 2).toUpperCase(),
+          id: item.id_testimoni,
+          name: `User ${item.id_user}`,                             // dari kolom id_user
+          role: item.role_pekerjaan || 'Pelanggan GarasiH',        // dari kolom role_pekerjaan
+          avatar: String(item.id_user).substring(0, 2).toUpperCase(), // 2 digit id_user
           car: carModels[index % carModels.length],
-          rating: Math.floor(Math.random() * 2) + 4, // Rating acak antara 4-5
-          text: item.body.substring(0, 100) + '...', // Potong text komentar
-          date: 'Mei 2026',
+          rating: Math.floor(Math.random() * 2) + 4,               // rating 4-5
+          text: item.review.length > 100 ? item.review.substring(0, 100) + '...' : item.review,
           color: colors[index % colors.length],
         }));
         setTestimonials(formattedData);
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Gagal mengambil data testimoni:", err);
+        console.error("Gagal mengambil data testimoni dari backend:", err);
         setLoading(false);
       });
-  }, []); // Kosong array dependency memastikan effect ini hanya jalan saat mount pertama kali
+  }, []);
 
   const avgRating = testimonials.length > 0
     ? (testimonials.reduce((sum, t) => sum + t.rating, 0) / testimonials.length).toFixed(1)
@@ -118,8 +116,7 @@ const Testimoni = () => {
                 <p className="text-sm text-gray-600 leading-relaxed flex-1 italic">"{t.text}"</p>
 
                 {/* Date */}
-                <p className="text-[10px] text-gray-300 font-bold uppercase tracking-widest mt-4 pt-4 border-t border-gray-50 flex items-center justify-between">
-                  <span>{t.date}</span>
+                <p className="text-[10px] text-gray-300 font-bold uppercase tracking-widest mt-4 pt-4 border-t border-gray-50 flex items-center justify-end">
                   <span className="text-green-500 flex items-center gap-1">
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                     Terverifikasi
