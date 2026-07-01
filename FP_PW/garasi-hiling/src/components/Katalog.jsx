@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Katalog = ({ cars, loading, searchTerm }) => {
+const Katalog = ({ cars, isLoggedIn = false }) => { // Tambahkan prop cek login (bisa diganti sesuai global state/auth context Anda)
   const [allVehicles, setAllVehicles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -26,16 +26,12 @@ const Katalog = ({ cars, loading, searchTerm }) => {
     fetchHomeData();
   }, []);
 
-  // LOGIKA LIVE SEARCH SINKRON:
-  // Jika user sedang mengetik di Navbar (searchTerm tidak kosong), lakukan filter ke data database.
-  // Jika tidak sedang mengetik, potong array dan tampilkan 4 unit utama saja untuk highlight Home.
-  const displayVehicles = searchTerm && searchTerm.trim() !== ""
-    ? allVehicles.filter(unit => 
-        unit.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        unit.category.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : allVehicles.slice(0, 4);
+  // Sinkronisasi dengan fitur Live Search dari Navbar
+  const displayVehicles = cars && cars.length < 12 
+    ? cars 
+    : allVehicles.slice(0, 4); // Hanya menampilkan 4 unit pertama saja
 
+  // Fungsi Interseptor untuk Order Unit
   const handleOrder = (car) => {
     navigate('/contact', { 
       state: { 
@@ -44,9 +40,25 @@ const Katalog = ({ cars, loading, searchTerm }) => {
       } 
     });
     setShowModal(false);
+
+    if (!isLoggedIn) {
+      // JIKA BELUM LOGIN: Paksa masuk ke halaman login/register dan bawa data unit tujuan
+      alert(`Autentikasi Diperlukan: Silakan login terlebih dahulu untuk memesan ${car.name}.`);
+      navigate('/login', { 
+        state: { 
+          redirectedFrom: 'katalog',
+          intendedCar: car 
+        } 
+      });
+    } else {
+      // JIKA SUDAH LOGIN: Lanjutkan langsung ke halaman kontak pemesanan
+      navigate('/contact', { 
+        state: { message: `Halo GarasiHiling, saya tertarik untuk memesan unit ${car.name}. Mohon info prosedur dan ketersediaan stoknya.` } 
+      });
+    }
   };
 
-  if (isLoading || loading) {
+  if (isLoading) {
     return (
       <div className="py-20 text-center">
         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-red-600 mx-auto"></div>
@@ -63,11 +75,7 @@ const Katalog = ({ cars, loading, searchTerm }) => {
           <h3 className="text-4xl font-black italic uppercase tracking-tight">
             Highlight <span className="text-red-600 underline">Unit</span>
           </h3>
-          {searchTerm && (
-            <p className="text-sm text-slate-400 mt-2">
-              Menampilkan hasil pencarian untuk: <span className="text-red-600 font-bold">"{searchTerm}"</span> ({displayVehicles.length} ditemukan)
-            </p>
-          )}
+          <p className="text-slate-500 text-sm mt-2">Pilihan unit premium terbaik untuk perjalanan Anda.</p>
         </div>
         <button 
           onClick={() => navigate('/katalog-detail')} 
@@ -76,14 +84,6 @@ const Katalog = ({ cars, loading, searchTerm }) => {
           Lihat Semua Unit ({allVehicles.length}) →
         </button>
       </div>
-
-      {/* --- KONDISI JIKA HASIL PENCARIAN KOSONG --- */}
-      {displayVehicles.length === 0 && (
-        <div className="text-center py-20 border border-dashed border-slate-200 rounded-3xl">
-          <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Mohon Maaf, Unit Tidak Ditemukan</p>
-          <p className="text-xs text-slate-400 mt-1">Coba gunakan kata kunci model kendaraan lain.</p>
-        </div>
-      )}
 
       {/* --- GRID KATALOG --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10">
