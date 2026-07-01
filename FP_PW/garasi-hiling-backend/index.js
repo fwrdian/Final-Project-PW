@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import mobilRoutes from './routes/mobil.js';
 import promoRoutes from './routes/promo.js';       
 import pemesananRoutes from './routes/pemesanan.js'; 
+import testimoniRoutes from './routes/testimoni.js'; 
+import userRoutes from './routes/user.js';        
 
 dotenv.config();
 
@@ -16,6 +18,8 @@ app.use(express.json());
 app.use('/api/mobil', mobilRoutes);
 app.use('/api/promo', promoRoutes);        
 app.use('/api/pemesanan', pemesananRoutes);
+app.use('/api/testimoni', testimoniRoutes); 
+app.use('/api/user', userRoutes);
 
 app.get('/', (req, res) => {
     res.send('Server GarasiHiling Backend Running...');

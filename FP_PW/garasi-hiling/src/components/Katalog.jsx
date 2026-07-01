@@ -9,15 +9,15 @@ const Katalog = ({ cars, loading, searchTerm }) => {
   const [activeCar, setActiveCar] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch data dari API yang sama dengan KatalogDetail
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get('https://6a11f1ef3e35d0f37ee3d6d8.mockapi.io/api/v1/katalog');
+        // Tembakan diarahkan langsung ke port 5000 server lokal kamu
+        const response = await axios.get('http://localhost:5000/api/mobil');
         setAllVehicles(response.data);
       } catch (error) {
-        console.error("Gagal mengambil data katalog home:", error);
+        console.error("Gagal mengambil data katalog dari backend Express:", error);
       } finally {
         setIsLoading(false);
       }
@@ -27,7 +27,7 @@ const Katalog = ({ cars, loading, searchTerm }) => {
   }, []);
 
   // LOGIKA LIVE SEARCH SINKRON:
-  // Jika user sedang mengetik di Navbar (searchTerm tidak kosong), lakukan filter ke data MockAPI.
+  // Jika user sedang mengetik di Navbar (searchTerm tidak kosong), lakukan filter ke data database.
   // Jika tidak sedang mengetik, potong array dan tampilkan 4 unit utama saja untuk highlight Home.
   const displayVehicles = searchTerm && searchTerm.trim() !== ""
     ? allVehicles.filter(unit => 
@@ -38,7 +38,10 @@ const Katalog = ({ cars, loading, searchTerm }) => {
 
   const handleOrder = (car) => {
     navigate('/contact', { 
-      state: { message: `Halo GarasiHiling, saya tertarik untuk memesan unit ${car.name}. Mohon info prosedur dan ketersediaan stoknya.` } 
+      state: { 
+        message: `Halo GarasiHiling, saya tertarik untuk memesan unit ${car.name}. Mohon info prosedur dan ketersediaan stoknya.`,
+        id_mobil: car.id // Menyisipkan ID mobil untuk kebutuhan data transaksi form booking
+      } 
     });
     setShowModal(false);
   };

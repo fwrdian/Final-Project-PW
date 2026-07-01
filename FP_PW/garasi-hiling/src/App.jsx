@@ -22,15 +22,16 @@ export default function App() {
   const [promoMessage, setPromoMessage] = useState('');
   const navigate = useNavigate();
 
-  // MENGUBAH API UTAMA: Mengambil seluruh lineup mobil dari endpoint katalog asli
+  // 🟢 SINKRONISASI API UTAMA: Mengambil lineup mobil langsung dari database MySQL via Express
   useEffect(() => {
     const fetchGlobalVehicles = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('https://6a11f1ef3e35d0f37ee3d6d8.mockapi.io/api/v1/katalog');
+        // Diarahkan ke server localhost Express port 5000 kamu
+        const response = await axios.get('http://localhost:5000/api/mobil');
         setCars(response.data);
       } catch (error) {
-        console.error("Gagal sinkronisasi API Utama Showroom:", error);
+        console.error("Gagal sinkronisasi API Utama Showroom dari backend Express:", error);
       } finally {
         setLoading(false);
       }
@@ -44,7 +45,7 @@ export default function App() {
     navigate('/contact');
   };
 
-  // Live Search menyaring data nama (unit.name) dari MockAPI katalog
+  // Live Search menyaring data nama (unit.name) secara langsung dari database lokal
   const filteredCars = cars.filter(car =>
     car.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -84,7 +85,7 @@ export default function App() {
               </section>
 
               <div className="max-w-7xl mx-auto px-6 md:px-8 py-24">
-                {/* Menyalurkan filteredCars yang sudah berbasis data MockAPI */}
+                {/* Menyalurkan filteredCars yang sudah berbasis database MySQL Express */}
                 <Katalog cars={filteredCars} loading={loading} searchTerm={searchTerm} />
               </div>
             </>
