@@ -13,10 +13,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
-app.use(express.json()); 
+app.use(express.json());
 
 app.use('/api/mobil', mobilRoutes);
-app.use('/api/promo', promoRoutes);        
+app.use('/api/promo', promoRoutes);
 app.use('/api/pemesanan', pemesananRoutes);
 app.use('/api/testimoni', testimoniRoutes); 
 app.use('/api/user', userRoutes);
