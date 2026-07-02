@@ -13,17 +13,16 @@ const Promo = () => {
   useEffect(() => {
     const fetchPromos = async () => {
       try {
-        // GANTI URL INI dengan URL endpoint MockAPI milikmu yang asli
-        const response = await axios.get('https://6a11f1ef3e35d0f37ee3d6d8.mockapi.io/api/v1/promo');
+        setLoading(true);
+        // 🟢 MENGHUBUNGKAN REACT KE ENDPOINT PROMO BACKEND LOKAL
+        const response = await axios.get('http://localhost:5000/api/promo');
         
-        // Membatasi data yang diambil hanya 10 item pertama
-        const limitedData = response.data.slice(0, 10);
-        
-        setPromoList(limitedData);
+        // Memuat seluruh data penawaran dari database MySQL (Total 15 list promo)
+        setPromoList(response.data);
         setLoading(false);
       } catch (err) {
-        console.error("Gagal mengambil data promo:", err);
-        setError("Gagal memuat data penawaran spesial. Silakan coba lagi nanti.");
+        console.error("Gagal mengambil data promo dari backend Express:", err);
+        setError("Gagal memuat data penawaran spesial. Silakan pastikan server backend Anda sudah menyala.");
         setLoading(false);
       }
     };
@@ -31,10 +30,13 @@ const Promo = () => {
     fetchPromos();
   }, []);
 
-  const handleTakePromo = (promoTitle) => {
-    // Navigasi ke halaman contact sambil membawa data message
+  const handleTakePromo = (promo) => {
+    // Navigasi ke halaman contact sambil membawa template string message & ID Promo untuk transaksi
     navigate('/contact', { 
-      state: { message: `Halo GarasiHiling, saya tertarik dengan promo: ${promoTitle}. Mohon info selengkapnya.` } 
+      state: { 
+        message: `Halo GarasiHiling, saya tertarik dengan promo: ${promo.title}. Mohon info selengkapnya.`,
+        id_promo: promo.id // Menyisipkan ID promo untuk kebutuhan data foreign key di tabel pemesanan
+      } 
     });
   };
 
@@ -117,6 +119,7 @@ const Promo = () => {
               <h2 className="text-3xl md:text-4xl font-black italic uppercase mb-6">
                 {promo.title}
               </h2>
+              {/* Menggunakan backtick properti desc karena kolom database SQL memakai backtick */}
               <p className="text-gray-500 mb-10">{promo.desc}</p>
               
               {/* Bagian Footer Card */}
@@ -126,7 +129,7 @@ const Promo = () => {
                   <p className="text-sm font-black text-slate-800">{promo.validUntil}</p>
                 </div>
                 <button 
-                  onClick={() => handleTakePromo(promo.title)} 
+                  onClick={() => handleTakePromo(promo)} 
                   className="bg-black text-white px-10 py-4 rounded-full font-bold text-[10px] uppercase hover:bg-red-600 transition-all"
                 >
                   Ambil Promo
