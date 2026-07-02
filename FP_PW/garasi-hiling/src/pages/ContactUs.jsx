@@ -35,8 +35,20 @@ const ContactUs = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulasi request API menggunakan setTimeout
+    // Buat pesan WhatsApp dari data form
+    const waNumber = '628981319730';
+    const waMessage =
+      `Halo, saya ingin menghubungi Garasi Hiling.\n\n` +
+      `*Nama:* ${form.name}\n` +
+      `*Email:* ${form.email}\n` +
+      (form.phone ? `*No. Telepon:* ${form.phone}\n` : '') +
+      `\n*Pesan:*\n${form.message}`;
+
+    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`;
+
+    // Delay singkat untuk menampilkan loading state, lalu buka WhatsApp
     setTimeout(() => {
+      window.open(waUrl, '_blank');
       setIsSubmitting(false);
       setSubmitted(true);
       setForm({ name: '', email: '', phone: '', message: '' }); // Reset form
