@@ -1,22 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const StarRating = ({ rating }) => (
-  <div className="flex gap-0.5">
-    {[1, 2, 3, 4, 5].map((star) => (
-      <svg
-        key={star}
-        className={`w-4 h-4 ${star <= rating ? 'text-amber-400' : 'text-gray-200'}`}
-        fill="currentColor"
-        viewBox="0 0 20 20"
-      >
-        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-      </svg>
-    ))}
-  </div>
-);
-
-const carModels = ['Toyota Supra G90', 'Toyota Crown Hybrid', 'Toyota GR Yaris', 'Toyota All New Avanza', 'Toyota Land Cruiser', 'Toyota Alphard HEV'];
 const colors = ['bg-red-600', 'bg-blue-600', 'bg-emerald-600', 'bg-amber-600', 'bg-violet-600', 'bg-pink-600'];
 
 const Testimoni = () => {
@@ -29,11 +13,10 @@ const Testimoni = () => {
       .then((res) => {
         const formattedData = res.data.map((item, index) => ({
           id: item.id_testimoni,
-          name: `User ${item.id_user}`,                             // dari kolom id_user
+          name: item.nama || `User ${item.id_user}`,               // nama user dari tabel user
           role: item.role_pekerjaan || 'Pelanggan GarasiH',        // dari kolom role_pekerjaan
-          avatar: String(item.id_user).substring(0, 2).toUpperCase(), // 2 digit id_user
-          car: carModels[index % carModels.length],
-          rating: Math.floor(Math.random() * 2) + 4,               // rating 4-5
+          avatar: (item.nama || String(item.id_user)).substring(0, 2).toUpperCase(), // 2 huruf awal nama
+
           text: item.review.length > 100 ? item.review.substring(0, 100) + '...' : item.review,
           color: colors[index % colors.length],
         }));
@@ -46,9 +29,7 @@ const Testimoni = () => {
       });
   }, []);
 
-  const avgRating = testimonials.length > 0
-    ? (testimonials.reduce((sum, t) => sum + t.rating, 0) / testimonials.length).toFixed(1)
-    : "0.0";
+
 
   return (
     <div className="py-10">
@@ -72,10 +53,9 @@ const Testimoni = () => {
       ) : (
         <>
           {/* Stats Bar */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-16 max-w-3xl mx-auto">
             {[
               { label: 'Total Review', value: `${testimonials.length}+` },
-              { label: 'Rating Rata-rata', value: avgRating },
               { label: 'Pelanggan Puas', value: '98%' },
               { label: 'Repeat Customer', value: '45%' },
             ].map((stat) => (
@@ -102,15 +82,10 @@ const Testimoni = () => {
                     <h4 className="font-bold text-sm capitalize">{t.name}</h4>
                     <p className="text-[11px] text-gray-400">{t.role}</p>
                   </div>
-                  <StarRating rating={t.rating} />
+
                 </div>
 
-                {/* Car Badge */}
-                <div className="mb-3">
-                  <span className="inline-block bg-slate-50 text-[10px] font-bold uppercase tracking-wider text-slate-600 px-3 py-1.5 rounded-full border border-slate-100">
-                    {t.car}
-                  </span>
-                </div>
+
 
                 {/* Testimonial Text */}
                 <p className="text-sm text-gray-600 leading-relaxed flex-1 italic">"{t.text}"</p>

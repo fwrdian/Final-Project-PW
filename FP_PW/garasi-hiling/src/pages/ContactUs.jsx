@@ -36,7 +36,7 @@ const ContactUs = () => {
     setIsSubmitting(true);
 
     // Buat pesan WhatsApp dari data form
-    const waNumber = '628981319730';
+    const waNumber = '6287756563631';
     const waMessage =
       `Halo, saya ingin menghubungi Garasi Hiling.\n\n` +
       `*Nama:* ${form.name}\n` +
