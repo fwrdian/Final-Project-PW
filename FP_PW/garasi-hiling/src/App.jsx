@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Routes, Route, useNavigate } from 'react-router-dom'; // Tambahkan ini
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'; // Tambahkan ini
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Katalog from './components/Katalog';
@@ -13,6 +13,7 @@ import Tentang from './components/Tentang';
 import Merchandise from './components/Merchandise';
 import SukuCadang from './components/SukuCadang';
 import Cart from './components/Cart';
+import Checkout from './components/Checkout';
 
 export default function App() {
   const [cars, setCars] = useState([]);
@@ -54,6 +55,9 @@ export default function App() {
       i.id === id && i.type === type ? { ...i, quantity: qty } : i
     ));
   };
+
+  // Kosongkan cart setelah pembayaran QRIS di Checkout.jsx berhasil
+  const clearCart = () => setCartItems([]);
 
   useEffect(() => {
     axios.get('https://fakestoreapi.com/products?limit=12')
@@ -159,6 +163,26 @@ export default function App() {
               cartItems={cartItems}
               onRemove={removeFromCart}
               onUpdateQuantity={updateQuantity}
+            />
+          } />
+
+          {/* Alias: project ini belum punya route "/katalog" sungguhan — halaman
+              katalog yang sudah ada terdaftar di "/katalog-detail" (lihat Header.jsx
+              & Katalog.jsx). Alias ini dibuat supaya tombol "Mulai Belanja" di
+              Cart.jsx yang mengarah ke "/katalog" tetap berfungsi tanpa perlu
+              mengubah route lain yang sudah dipakai tim. Hapus alias ini kalau
+              suatu saat "/katalog" dipakai untuk halaman yang benar-benar baru. */}
+          <Route path="/katalog" element={<Navigate to="/katalog-detail" replace />} />
+
+          {/* Halaman Checkout — terintegrasi dengan pengecekan login (baca token
+              dari localStorage, lihat komentar di Checkout.jsx) dan pembayaran QRIS.
+              Route "/login" belum didaftarkan di sini karena halaman Login/Register
+              dikerjakan oleh tim lain; begitu Login.jsx & route-nya ditambahkan,
+              redirect dari Checkout.jsx akan otomatis berfungsi. */}
+          <Route path="/checkout" element={
+            <Checkout
+              cartItems={cartItems}
+              onPaymentSuccess={clearCart}
             />
           } />
         </Routes>
