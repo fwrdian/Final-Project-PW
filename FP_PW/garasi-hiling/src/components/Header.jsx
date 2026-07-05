@@ -9,7 +9,6 @@ export default function Header({ setSearchTerm, cartItems = [] }) {
 
   const menuShop = [
     { name: 'Suku Cadang', desc: 'Original Toyota Parts' },
-    { name: 'Aksesoris GR', desc: 'Gazoo Racing Upgrades' },
     { name: 'Merchandise', desc: 'Exclusive Apparel' },
   ];
 
@@ -57,13 +56,6 @@ export default function Header({ setSearchTerm, cartItems = [] }) {
                   <div>
                     <p className="font-bold text-zinc-900 text-sm">Suku Cadang</p>
                     <p className="text-xs text-gray-400 mt-0.5">Original Toyota Parts</p>
-                  </div>
-                </Link>
-                <Link to="/belanja/aksesoris" className="flex items-start gap-3 px-4 py-3 hover:bg-red-50 transition-colors cursor-pointer">
-                  <span className="text-xl">🏁</span>
-                  <div>
-                    <p className="font-bold text-zinc-900 text-sm">Aksesoris GR</p>
-                    <p className="text-xs text-gray-400 mt-0.5">Gazoo Racing Upgrades</p>
                   </div>
                 </Link>
                 <Link to="/belanja/merchandise" className="flex items-start gap-3 px-4 py-3 hover:bg-red-50 transition-colors cursor-pointer">

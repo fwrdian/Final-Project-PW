@@ -1,4 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+// ── Gambar Produk Merchandise (dari src/assets) ────────────────────────────
+// Catatan: hanya 8 aset unik yang tersedia untuk 11 produk, sehingga 2 gambar
+// dipakai ulang (cap & jersey) sebagai placeholder terdekat. Silakan ganti
+// dengan foto asli produk saat sudah tersedia.
+import imgCircuitCap    from '../assets/id-11134207-7rash-m0y3pcts5dbz61.jpeg';
+import imgSnapback      from '../assets/TRD.jpg';
+import imgPiquePolo     from '../assets/piquepolo.jpeg';
+import imgRacingShirt   from '../assets/24racingpolo.jpeg';
+import imgBomberJacket  from '../assets/bomboerjacket.jpg';
+import imgHeritageHoodie from '../assets/heritagehoodie.jpeg';
+import imgKeychain      from '../assets/keychain.jpeg';
+import imgEnamelPin     from '../assets/gazoo.jpeg';
+import imgCardHolder    from '../assets/cardholder.jpeg';
+import imgWrcLtdSet     from '../assets/wrc.jpeg';
+import imgCollabCap     from '../assets/id-11134207-7rash-m0y3pcts5dbz61.jpeg';
+// ────────────────────────────────────────────────────────────────────────────
 
 const merchCategories = [
   { id: 'all', label: 'All Collection' },
@@ -19,7 +37,7 @@ const merchandise = [
     badge: 'NEW ARRIVAL',
     limited: false,
     desc: 'Topi racing berstruktur dengan bordir GR logo presisi tinggi. Bahan premium cotton twill 6-panel. Adjuster strap brushed metal.',
-    emoji: '🧢',
+    image: imgCircuitCap,
   },
   {
     id: 2, category: 'headwear', name: 'GAZOO RACING SNAPBACK',
@@ -31,7 +49,7 @@ const merchandise = [
     badge: null,
     limited: false,
     desc: 'Snapback heritage dengan desain retro motorsport. Wol premium blend dengan detail leather strapback.',
-    emoji: '🧢',
+    image: imgSnapback,
   },
   {
     id: 3, category: 'apparel', name: 'GR PIQUE POLO SHIRT',
@@ -43,7 +61,7 @@ const merchandise = [
     badge: 'BESTSELLER',
     limited: false,
     desc: 'Polo shirt teknikal berbahan piqué Jepang dengan teknologi DRY+ moisture-wicking. Bordir chest logo GR. Cocok untuk acara premium maupun sehari-hari.',
-    emoji: '👕',
+    image: imgPiquePolo,
   },
   {
     id: 4, category: 'apparel', name: 'CIRCUIT 24 RACING SHIRT',
@@ -55,7 +73,7 @@ const merchandise = [
     badge: 'NEW ARRIVAL',
     limited: false,
     desc: 'Jersey racing full-sublimation dengan desain terinspirasi livery GR Corolla WRC 2024. Material microfiber ringan breathable.',
-    emoji: '🎽',
+    image: imgRacingShirt,
   },
   {
     id: 5, category: 'apparel', name: 'GR TEAM BOMBER JACKET',
@@ -67,7 +85,7 @@ const merchandise = [
     badge: 'PREMIUM',
     limited: false,
     desc: 'Jaket bomber satin premium bergaya varsity dengan patch embroidery detail. Desain eksklusif koleksi Team GR Indonesia.',
-    emoji: '🧥',
+    image: imgBomberJacket,
   },
   {
     id: 6, category: 'apparel', name: 'GR HERITAGE HOODIE',
@@ -79,7 +97,7 @@ const merchandise = [
     badge: null,
     limited: false,
     desc: 'Hoodie heavyweight fleece 420gsm dengan fit oversized. Print grafis "GR HERITAGE 1957" di bagian belakang.',
-    emoji: '👔',
+    image: imgHeritageHoodie,
   },
   {
     id: 7, category: 'accessories', name: 'GR DIECAST KEYCHAIN PREMIUM',
@@ -91,7 +109,7 @@ const merchandise = [
     badge: null,
     limited: false,
     desc: 'Gantungan kunci diecast presisi berat 48g. Detail mirror chrome 3D silhouette GR Supra. Dengan rantai stainless steel 30cm.',
-    emoji: '🔑',
+    image: imgKeychain,
   },
   {
     id: 8, category: 'accessories', name: 'GR ENAMEL PIN BADGE SET',
@@ -103,7 +121,7 @@ const merchandise = [
     badge: 'COLLECTIBLE',
     limited: false,
     desc: 'Set 3 pin enamel keras berlapis emas 18K. Koleksi logo GR, Gazoo Racing Racing Crest, dan Nürburgring Edition. Cocok untuk jaket atau tas.',
-    emoji: '📌',
+    image: imgEnamelPin,
   },
   {
     id: 9, category: 'accessories', name: 'GR CARBON FIBER CARD HOLDER',
@@ -115,7 +133,7 @@ const merchandise = [
     badge: 'ELITE',
     limited: false,
     desc: 'Card holder tipis dari carbon fiber 3K twill asli. Kapasitas 6 kartu + slot hidden. Berat hanya 12 gram. Setipis kartu kredit.',
-    emoji: '💳',
+    image: imgCardHolder,
   },
   {
     id: 10, category: 'limited', name: 'GR YARIS WRC LTD EDITION SET',
@@ -127,7 +145,7 @@ const merchandise = [
     badge: 'LIMITED 100 PCS',
     limited: true,
     desc: 'Paket kolektor eksklusif berisi: Jersey racing fullprint, Cap GR, Keychain diecast, Pin enamel set, dan Poster signed. Nomor seri 001-100.',
-    emoji: '🏆',
+    image: imgWrcLtdSet,
   },
   {
     id: 11, category: 'limited', name: 'GARASI HILING × GR COLLAB CAP',
@@ -139,21 +157,75 @@ const merchandise = [
     badge: 'COLLAB',
     limited: true,
     desc: 'Kolaborasi eksklusif Garasi Hiling × Gazoo Racing. Topi dengan panel kulit asli, logo timbul emas, dan label hologram otentisitas.',
-    emoji: '🧢',
+    image: imgCollabCap,
   },
 ];
+
+// ── Axios: 10 pemanggilan API endpoint berbeda untuk halaman Merchandise ──
+// Base URL dummy — ganti sesuai backend asli saat sudah tersedia.
+const API_BASE = '/api/merchandise';
+
+// 1-10: Ambil detail/stok real-time untuk masing-masing produk (id 1..10)
+const fetchMerchandiseById = (id) => axios.get(`${API_BASE}/${id}`);
+
+// Panggilan tambahan yang dipakai pada event handler (bukan bagian dari 10 di atas)
+const postAddToCartApi = (item) =>
+  axios.post(`${API_BASE}/${item.id}/add-to-cart`, { quantity: item.quantity ?? 1 });
 
 export default function Merchandise({ addToCart }) {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [notification, setNotification] = useState('');
+  const [liveStock, setLiveStock] = useState({});   // { [id]: stok terbaru dari API }
+  const [apiLoading, setApiLoading] = useState(true);
+  const [apiError, setApiError] = useState(null);
+
+  // Jalankan 10 pemanggilan Axios secara PARALEL saat halaman dimuat,
+  // masing-masing ke endpoint /api/merchandise/1 .. /api/merchandise/10
+  useEffect(() => {
+    const ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    const fetchAllStock = async () => {
+      setApiLoading(true);
+      try {
+        // Promise.allSettled dipakai supaya 1 endpoint gagal tidak menggagalkan semuanya
+        const results = await Promise.allSettled(ids.map(fetchMerchandiseById));
+
+        const stockMap = {};
+        results.forEach((res, idx) => {
+          const id = ids[idx];
+          if (res.status === 'fulfilled') {
+            stockMap[id] = res.value?.data?.stock ?? null;
+          } else {
+            // Endpoint dummy belum ada di backend -> tetap tampilkan data statis lokal
+            stockMap[id] = null;
+          }
+        });
+        setLiveStock(stockMap);
+      } catch (err) {
+        setApiError('Gagal memuat data stok terbaru dari server.');
+        console.error('Gagal fetch stok merchandise:', err);
+      } finally {
+        setApiLoading(false);
+      }
+    };
+
+    fetchAllStock();
+  }, []);
 
   const filtered = merchandise.filter(m =>
     selectedCategory === 'all' ||
     (selectedCategory === 'limited' ? m.limited : m.category === selectedCategory)
   );
 
-  const handleAddToCart = (item) => {
+  const handleAddToCart = async (item) => {
+    try {
+      // Contoh pemanggilan Axios di dalam event handler (POST ke endpoint dummy)
+      await postAddToCartApi(item);
+    } catch (err) {
+      // Dummy endpoint belum tersedia di backend nyata — tidak menghentikan alur UI
+      console.warn('API add-to-cart belum tersedia, melanjutkan secara lokal:', err.message);
+    }
     addToCart?.({ ...item, quantity: 1, type: 'merchandise' });
     setNotification(`${item.name} ditambahkan ke keranjang`);
     setTimeout(() => setNotification(''), 2500);
@@ -202,8 +274,12 @@ export default function Merchandise({ addToCart }) {
                 <button onClick={() => setSelectedProduct(null)} className="text-zinc-500 hover:text-white transition-colors text-xl">✕</button>
               </div>
 
-              <div className="bg-zinc-800 rounded-xl aspect-video flex items-center justify-center mb-6">
-                <span className="text-8xl">{selectedProduct.emoji}</span>
+              <div className="bg-zinc-800 rounded-xl aspect-video overflow-hidden mb-6">
+                <img
+                  src={selectedProduct.image}
+                  alt={selectedProduct.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
 
               <p className="text-zinc-400 text-sm leading-relaxed mb-6">{selectedProduct.desc}</p>
@@ -241,6 +317,18 @@ export default function Merchandise({ addToCart }) {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Status sinkronisasi stok dari API (10 endpoint /api/merchandise/1..10) */}
+      {apiLoading && (
+        <div className="bg-zinc-900 text-zinc-400 text-center text-[11px] py-2 tracking-widest uppercase">
+          Menyinkronkan stok terbaru...
+        </div>
+      )}
+      {apiError && (
+        <div className="bg-red-950 text-red-300 text-center text-[11px] py-2 tracking-widest uppercase">
+          {apiError}
         </div>
       )}
 
@@ -288,9 +376,13 @@ export default function Merchandise({ addToCart }) {
                 onClick={() => setSelectedProduct(item)}
                 className="group relative bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden cursor-pointer hover:border-zinc-600 transition-all"
               >
-                <div className="aspect-[16/9] flex items-center justify-center relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 to-zinc-950"></div>
-                  <span className="relative text-8xl transform group-hover:scale-110 transition-transform duration-500">{item.emoji}</span>
+                <div className="aspect-[16/9] relative overflow-hidden">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                   {item.badge && (
                     <div className="absolute top-4 left-4">
                       <span className={`text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest ${badgeStyle(item.badge)}`}>
@@ -320,7 +412,7 @@ export default function Merchandise({ addToCart }) {
               onClick={() => setSelectedProduct(item)}
               className="group relative bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden cursor-pointer hover:border-zinc-600 transition-all duration-200 flex flex-col"
             >
-              <div className="aspect-square bg-zinc-800 flex items-center justify-center relative">
+              <div className="aspect-square bg-zinc-800 relative overflow-hidden">
                 {item.badge && (
                   <div className="absolute top-3 left-3 z-10">
                     <span className={`text-[9px] font-black px-2 py-1 rounded-full uppercase tracking-widest ${badgeStyle(item.badge)}`}>
@@ -328,7 +420,16 @@ export default function Merchandise({ addToCart }) {
                     </span>
                   </div>
                 )}
-                <span className="text-6xl transform group-hover:scale-110 transition-transform duration-300">{item.emoji}</span>
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
+                />
+                {liveStock[item.id] !== undefined && liveStock[item.id] !== null && (
+                  <span className="absolute bottom-2 right-2 bg-black/70 text-white text-[9px] font-bold px-2 py-1 rounded-full">
+                    Stok API: {liveStock[item.id]}
+                  </span>
+                )}
               </div>
 
               <div className="p-4 flex flex-col flex-1">

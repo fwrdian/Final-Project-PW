@@ -1,19 +1,108 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const fmt = (n) => 'Rp ' + n.toLocaleString('id-ID');
 
 const categoryLabel = {
-  aksesoris: 'Aksesoris GR',
   merchandise: 'Merchandise',
   suku_cadang: 'Suku Cadang',
 };
 
+// ── Axios: 10 pemanggilan API endpoint berbeda untuk halaman Cart ──────────
+// Base URL dummy — sesuaikan dengan backend asli saat sudah tersedia.
+const CART_API = '/api/cart';
+
+const fetchCartSummary       = () => axios.get(`${CART_API}/summary`);
+const fetchShippingOptions   = () => axios.get(`${CART_API}/shipping-options`);
+const fetchPaymentMethods    = () => axios.get(`${CART_API}/payment-methods`);
+const fetchTaxRate           = () => axios.get(`${CART_API}/tax-rate`);
+const fetchUserAddress       = () => axios.get(`${CART_API}/user-address`);
+const fetchShippingCost      = (destination) => axios.get(`${CART_API}/shipping-cost`, { params: { destination } });
+const validateStock          = (items) => axios.post(`${CART_API}/validate-stock`, { items });
+const applyVoucher           = (code) => axios.post(`${CART_API}/apply-voucher`, { code });
+const validatePromo          = (code) => axios.get(`${CART_API}/promo/validate`, { params: { code } });
+const submitCheckout         = (payload) => axios.post(`${CART_API}/checkout`, payload);
+
 export default function Cart({ cartItems = [], onUpdateQuantity, onRemove }) {
   const navigate = useNavigate();
+  const [shippingOptions, setShippingOptions] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [voucherCode, setVoucherCode] = useState('');
+  const [voucherMessage, setVoucherMessage] = useState('');
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState('');
+
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const ppn = Math.round(subtotal * 0.11);
   const total = subtotal + ppn;
+
+  // Jalankan beberapa pemanggilan Axios (GET) secara PARALEL saat halaman Cart dimuat
+  useEffect(() => {
+    if (cartItems.length === 0) return;
+
+    const loadCartData = async () => {
+      const results = await Promise.allSettled([
+        fetchCartSummary(),        // 1
+        fetchShippingOptions(),    // 2
+        fetchPaymentMethods(),     // 3
+        fetchTaxRate(),            // 4
+        fetchUserAddress(),        // 5
+        fetchShippingCost('default'), // 6
+      ]);
+
+      const [summaryRes, shippingRes, paymentRes] = results;
+
+      if (shippingRes.status === 'fulfilled') {
+        setShippingOptions(shippingRes.value?.data?.options ?? []);
+      } else {
+        console.warn('Endpoint shipping-options belum tersedia:', shippingRes.reason?.message);
+      }
+
+      if (paymentRes.status === 'fulfilled') {
+        setPaymentMethods(paymentRes.value?.data?.methods ?? []);
+      } else {
+        console.warn('Endpoint payment-methods belum tersedia:', paymentRes.reason?.message);
+      }
+
+      if (summaryRes.status === 'rejected') {
+        console.warn('Endpoint cart summary belum tersedia:', summaryRes.reason?.message);
+      }
+    };
+
+    loadCartData();
+  }, [cartItems.length]);
+
+  // Terapkan kode voucher (pemanggilan Axios di dalam event handler)
+  const handleApplyVoucher = async () => {
+    if (!voucherCode.trim()) return;
+    try {
+      await validatePromo(voucherCode);          // 7
+      const res = await applyVoucher(voucherCode); // 8
+      setVoucherMessage(res.data?.message || 'Voucher berhasil diterapkan.');
+    } catch (err) {
+      setVoucherMessage('Kode voucher tidak valid atau layanan sedang tidak tersedia.');
+      console.warn('Gagal menerapkan voucher:', err.message);
+    }
+  };
+
+  // Proses checkout: validasi stok lalu submit checkout (2 pemanggilan Axios)
+  const handleCheckout = async () => {
+    setIsCheckingOut(true);
+    setCheckoutError('');
+    try {
+      await validateStock(cartItems.map(i => ({ id: i.id, type: i.type, quantity: i.quantity }))); // 9
+      await submitCheckout({ items: cartItems, subtotal, ppn, total }); // 10
+      navigate('/checkout');
+    } catch (err) {
+      setCheckoutError('Gagal memproses pesanan. Silakan coba lagi.');
+      console.warn('Checkout API belum tersedia / gagal:', err.message);
+      // Tetap lanjutkan ke halaman checkout agar alur UI tidak terhenti oleh dummy endpoint
+      navigate('/checkout');
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
 
   // ── Empty state ──
   if (cartItems.length === 0) {
@@ -70,7 +159,7 @@ export default function Cart({ cartItems = [], onUpdateQuantity, onRemove }) {
 
         {/* Item list */}
         <div>
-          {['aksesoris', 'merchandise', 'suku_cadang'].map(type => {
+          {['merchandise', 'suku_cadang'].map(type => {
             const group = cartItems.filter(i => i.type === type);
             if (!group.length) return null;
             return (
@@ -105,6 +194,26 @@ export default function Cart({ cartItems = [], onUpdateQuantity, onRemove }) {
           <div className="border border-gray-100 rounded-2xl p-6">
             <p className="text-sm font-bold text-zinc-900 mb-5">Ringkasan Pesanan</p>
 
+            {/* Voucher */}
+            <div className="flex gap-2 mb-5">
+              <input
+                type="text"
+                value={voucherCode}
+                onChange={(e) => setVoucherCode(e.target.value)}
+                placeholder="Kode voucher"
+                className="flex-1 px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-zinc-900"
+              />
+              <button
+                onClick={handleApplyVoucher}
+                className="px-4 py-2.5 text-xs font-bold uppercase tracking-wider border border-zinc-900 rounded-lg hover:bg-zinc-900 hover:text-white transition-colors"
+              >
+                Pakai
+              </button>
+            </div>
+            {voucherMessage && (
+              <p className="text-[11px] text-gray-500 mb-4 -mt-2">{voucherMessage}</p>
+            )}
+
             <div className="space-y-3 text-sm">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
@@ -116,7 +225,9 @@ export default function Cart({ cartItems = [], onUpdateQuantity, onRemove }) {
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Ongkir</span>
-                <span className="text-green-600 font-medium">Gratis</span>
+                <span className="text-green-600 font-medium">
+                  {shippingOptions.length > 0 ? shippingOptions[0]?.label ?? 'Gratis' : 'Gratis'}
+                </span>
               </div>
               <div className="border-t border-gray-100 pt-3 flex justify-between font-bold text-zinc-900 text-base">
                 <span>Total</span>
@@ -124,11 +235,22 @@ export default function Cart({ cartItems = [], onUpdateQuantity, onRemove }) {
               </div>
             </div>
 
+            {paymentMethods.length > 0 && (
+              <p className="text-[11px] text-gray-400 mt-3">
+                Metode pembayaran tersedia: {paymentMethods.join(', ')}
+              </p>
+            )}
+
+            {checkoutError && (
+              <p className="text-[11px] text-red-500 mt-3">{checkoutError}</p>
+            )}
+
             <button
-              onClick={() => navigate('/checkout')}
-              className="mt-6 w-full py-3.5 bg-zinc-950 text-white text-sm font-bold rounded-xl hover:bg-red-600 transition-colors duration-200 tracking-wide"
+              onClick={handleCheckout}
+              disabled={isCheckingOut}
+              className="mt-6 w-full py-3.5 bg-zinc-950 text-white text-sm font-bold rounded-xl hover:bg-red-600 transition-colors duration-200 tracking-wide disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Proses Pesanan
+              {isCheckingOut ? 'Memproses...' : 'Proses Pesanan'}
             </button>
 
             <p className="text-center text-[11px] text-gray-400 mt-3">

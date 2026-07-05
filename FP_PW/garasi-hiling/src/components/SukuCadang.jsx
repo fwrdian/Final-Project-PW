@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 // ── Suku Cadang Imports ────────────────────────────────────────────────────
 import imgAki             from '../assets/AkiGS.jpg';
@@ -258,11 +259,44 @@ function ProductImage({ src, alt }) {
   );
 }
 
+// ── Axios: 10 pemanggilan API endpoint berbeda untuk halaman SukuCadang ────
+// Base URL dummy — ganti sesuai backend asli saat sudah tersedia.
+const SPAREPART_API = '/api/sukucadang';
+
+// 1-10: Ambil detail/stok real-time untuk masing-masing produk (id 1..10)
+const fetchSukuCadangById = (id) => axios.get(`${SPAREPART_API}/${id}`);
+
+// Dipakai di event handler saat produk ditambahkan ke keranjang
+const postReserveStock = (product) =>
+  axios.post(`${SPAREPART_API}/${product.id}/reserve`, { quantity: 1 });
+
 export default function SukuCadang({ addToCart }) {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('default');
   const [search, setSearch] = useState('');
   const [notification, setNotification] = useState('');
+  const [liveStock, setLiveStock] = useState({});
+
+  // Jalankan 10 pemanggilan Axios secara PARALEL saat halaman dimuat,
+  // masing-masing ke endpoint /api/sukucadang/1 .. /api/sukucadang/10
+  useEffect(() => {
+    const ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    const fetchAllStock = async () => {
+      const results = await Promise.allSettled(ids.map(fetchSukuCadangById));
+      const stockMap = {};
+      results.forEach((res, idx) => {
+        const id = ids[idx];
+        stockMap[id] = res.status === 'fulfilled' ? (res.value?.data?.stock ?? null) : null;
+        if (res.status === 'rejected') {
+          console.warn(`Endpoint ${SPAREPART_API}/${id} belum tersedia:`, res.reason?.message);
+        }
+      });
+      setLiveStock(stockMap);
+    };
+
+    fetchAllStock();
+  }, []);
 
   const filteredProducts = products
     .filter(p => selectedCategory === 'all' || p.category === selectedCategory)
@@ -278,7 +312,13 @@ export default function SukuCadang({ addToCart }) {
       return a.id - b.id;
     });
 
-  const handleAddToCart = (product) => {
+  const handleAddToCart = async (product) => {
+    try {
+      // Contoh pemanggilan Axios di dalam event handler (POST ke endpoint dummy)
+      await postReserveStock(product);
+    } catch (err) {
+      console.warn('API reserve stock belum tersedia, melanjutkan secara lokal:', err.message);
+    }
     addToCart?.({ ...product, quantity: 1, type: 'suku_cadang' });
     setNotification(`${product.name} ditambahkan ke keranjang`);
     setTimeout(() => setNotification(''), 2500);
@@ -415,6 +455,11 @@ export default function SukuCadang({ addToCart }) {
                 {product.stock <= 5 && !product.badge && (
                   <span className="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                     Stok Terbatas
+                  </span>
+                )}
+                {liveStock[product.id] !== undefined && liveStock[product.id] !== null && (
+                  <span className="absolute bottom-2 left-2 bg-zinc-900/80 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">
+                    Stok API: {liveStock[product.id]}
                   </span>
                 )}
               </div>

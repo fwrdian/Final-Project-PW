@@ -12,7 +12,6 @@ import ContactUs from './components/ContactUs';
 import Tentang from './components/Tentang';
 import Merchandise from './components/Merchandise';
 import SukuCadang from './components/SukuCadang';
-import AksesoriGR from './components/AksesoriGR';
 import Cart from './components/Cart';
 
 export default function App() {
@@ -155,7 +154,6 @@ export default function App() {
           {/* --- ROUTES BELANJA --- */}
           <Route path="/belanja/merchandise" element={<Merchandise addToCart={addToCart} />} />
           <Route path="/belanja/suku-cadang" element={<SukuCadang addToCart={addToCart} />} />
-          <Route path="/belanja/aksesoris" element={<AksesoriGR addToCart={addToCart} />} />
           <Route path="/cart" element={
             <Cart
               cartItems={cartItems}
