@@ -1,18 +1,4 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-
-const imgBridgestone = new URL('../assets/.jpeg', import.meta.url).href;
-const imgMichelin    = new URL('../assets/Michelin.jpeg',                       import.meta.url).href;
-const imgYokohama    = new URL('../assets/Yokohama.jpeg',                       import.meta.url).href;
-const imgEnkei       = new URL('../assets/Enkei.jpeg',                          import.meta.url).href;
-const imgOZ          = new URL('../assets/OZSuperturismoAereo.jpeg',            import.meta.url).href;
-const imgRays        = new URL('../assets/RaysTE37UltraLargePCD.jpeg',          import.meta.url).href;
-const img3M          = new URL('../assets/3MCrystallineCR90.jpeg',              import.meta.url).href;
-const imgVKool       = new URL('../assets/VKOOLVK40Nano.jpeg',                  import.meta.url).href;
-const imgLlumar      = new URL('../assets/LlumarCTX35.jpeg',                    import.meta.url).href;
-const imgTRD         = new URL('../assets/TRD.jpeg',                            import.meta.url).href;
-const imgPioneer     = new URL('../assets/PioneerDMHZ5350BT.jpeg',              import.meta.url).href;
-const imgFloorMat    = new URL('../assets/FloorMatLuxury.jpeg',                 import.meta.url).href;
 
 const accCategories = [
   { id: 'all', label: 'Semua Aksesoris', icon: '★' },
@@ -32,7 +18,6 @@ const accessories = [
     badge: 'Best Seller', rating: 4.8, reviews: 234,
     desc: 'Ban touring premium dengan ketahanan superior di jalan basah maupun kering.',
     tag: 'TOURING',
-    image: imgBridgestone,
   },
   {
     id: 2, category: 'ban', name: 'Michelin Pilot Sport 4',
@@ -40,7 +25,6 @@ const accessories = [
     badge: 'Performance', rating: 4.9, reviews: 187,
     desc: 'Ban sport ultra-high performance untuk pengendara yang menuntut presisi.',
     tag: 'SPORT',
-    image: imgMichelin,
   },
   {
     id: 3, category: 'ban', name: 'Yokohama Geolandar A/T G015',
@@ -48,7 +32,6 @@ const accessories = [
     badge: 'Off-Road', rating: 4.7, reviews: 145,
     desc: 'Ban all-terrain tangguh untuk SUV dan pickup. Ideal untuk medan mix.',
     tag: 'ALL-TERRAIN',
-    image: imgYokohama,
   },
   {
     id: 4, category: 'velg', name: 'Enkei RPF1 Racing',
@@ -56,7 +39,6 @@ const accessories = [
     badge: 'GR Sport', rating: 4.9, reviews: 92,
     desc: 'Velg racing ringan berbahan MAT Technology untuk performa optimal.',
     tag: 'FORGED',
-    image: imgEnkei,
   },
   {
     id: 5, category: 'velg', name: 'OZ Superturismo Aereo',
@@ -64,7 +46,6 @@ const accessories = [
     badge: 'Premium', rating: 4.8, reviews: 76,
     desc: 'Desain motorsport Italia yang timeless. Pilihan kolektor sejati.',
     tag: 'RACING',
-    image: imgOZ,
   },
   {
     id: 6, category: 'velg', name: 'Rays TE37 Ultra Large PCD',
@@ -72,7 +53,6 @@ const accessories = [
     badge: 'JDM Iconic', rating: 5.0, reviews: 43,
     desc: 'Legenda otomotif Jepang. Konstruksi forged monoblock 6-spoke klasik.',
     tag: 'FORGED',
-    image: imgRays,
   },
   {
     id: 7, category: 'kacafilm', name: '3M Crystalline CR 90',
@@ -80,7 +60,6 @@ const accessories = [
     badge: 'Top Tier', rating: 4.9, reviews: 312,
     desc: 'Penolakan panas 60%, kejernihan 90%, tanpa interferensi sinyal. Film nano-ceramic terbaik.',
     tag: 'NANO CERAMIC',
-    image: img3M,
   },
   {
     id: 8, category: 'kacafilm', name: 'V-Kool VK40 Nano',
@@ -88,7 +67,6 @@ const accessories = [
     badge: 'Elite', rating: 4.8, reviews: 198,
     desc: 'Teknologi multi-layer nano metalik. Garansi 10 tahun, penolakan UV 99%.',
     tag: 'NANO METALIC',
-    image: imgVKool,
   },
   {
     id: 9, category: 'kacafilm', name: 'Llumar CTX 35',
@@ -96,7 +74,6 @@ const accessories = [
     badge: 'Value Pick', rating: 4.6, reviews: 423,
     desc: 'Kaca film carbon berpenolakan panas baik tanpa mengganggu sinyal handphone.',
     tag: 'CARBON',
-    image: imgLlumar,
   },
   {
     id: 10, category: 'bodykit', name: 'TRD Aero Package Fortuner',
@@ -104,7 +81,6 @@ const accessories = [
     badge: 'Motorsport', rating: 4.8, reviews: 67,
     desc: 'Paket aero body kit genuine TRD untuk Fortuner 2021+. Material PP-AT grade.',
     tag: 'MOTORSPORT',
-    image: imgTRD,
   },
   {
     id: 11, category: 'audio', name: 'Pioneer DMH-Z5350BT 10"',
@@ -112,7 +88,6 @@ const accessories = [
     badge: 'Popular', rating: 4.7, reviews: 156,
     desc: 'Head unit 10" Android dengan Carplay, warna vivid WVGA, koneksi Bluetooth 5.0.',
     tag: 'ANDROID AUTO',
-    image: imgPioneer,
   },
   {
     id: 12, category: 'interior', name: 'All-New 3D Floor Mat Luxury',
@@ -120,7 +95,6 @@ const accessories = [
     badge: 'Best Value', rating: 4.6, reviews: 534,
     desc: 'Karpet 3D anti slip berbahan TPE food grade. Anti bau, waterproof, custom fit.',
     tag: 'WATERPROOF',
-    image: imgFloorMat,
   },
 ];
 
@@ -224,21 +198,10 @@ export default function AksesoriGR({ addToCart }) {
           {filtered.map(item => (
             <div key={item.id} className="group border border-gray-100 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-gray-200 transition-all duration-300 bg-white flex flex-col">
               {/* Image area */}
-              <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                  onError={e => {
-                    e.currentTarget.style.display = 'none';
-                    e.currentTarget.nextSibling.style.display = 'flex';
-                  }}
-                />
-                {/* Fallback emoji jika gambar gagal */}
-                <div className="absolute inset-0 hidden items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 text-6xl">
+              <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 aspect-[4/3] flex items-center justify-center overflow-hidden">
+                <div className="text-6xl transform group-hover:scale-110 transition-transform duration-500">
                   {item.category === 'ban' ? '🔵' : item.category === 'velg' ? '⚙️' : item.category === 'kacafilm' ? '🪟' : item.category === 'bodykit' ? '🚗' : item.category === 'audio' ? '🎵' : '✨'}
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
                 <div className="absolute top-3 left-3">
                   <span className={`text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest ${badgeColor(item.badge)}`}>
                     {item.badge}
@@ -290,3 +253,4 @@ export default function AksesoriGR({ addToCart }) {
     </div>
   );
 }
+

@@ -13,7 +13,6 @@ export default function Header({ setSearchTerm, cartItems = [] }) {
     { name: 'Merchandise', desc: 'Exclusive Apparel' },
   ];
 
-  // Fungsi styling menu aktif yang sudah diperbaiki
   const navStyle = ({ isActive }) =>
     `px-4 py-2 rounded-md transition-colors ${
       isActive
@@ -34,8 +33,11 @@ export default function Header({ setSearchTerm, cartItems = [] }) {
         <div className="hidden lg:flex items-center gap-1 text-[14px] font-bold uppercase tracking-widest text-zinc-800">
           <NavLink to="/" className={navStyle}>Home</NavLink>
           <NavLink to="/katalog-detail" className={navStyle}>Katalog</NavLink>
+          <NavLink to="/promo" className={navStyle}>Promo Mei</NavLink>
+          <NavLink to="/lokasi" className={navStyle}>Lokasi</NavLink>
+          <NavLink to="/testimoni" className={navStyle}>Testimoni</NavLink>
 
-          {/* DROPDOWN BELANJA */}
+          {/* DROPDOWN LAINNYA — dipindah ke sebelum Contact */}
           <div
             className="relative"
             onMouseEnter={() => setDropdownOpen(true)}
@@ -75,13 +77,10 @@ export default function Header({ setSearchTerm, cartItems = [] }) {
             )}
           </div>
 
-          <NavLink to="/promo" className={navStyle}>Promo Mei</NavLink>
-          <NavLink to="/lokasi" className={navStyle}>Lokasi</NavLink>
-          <NavLink to="/testimoni" className={navStyle}>Testimoni</NavLink>
           <NavLink to="/contact" className={navStyle}>Contact</NavLink>
         </div>
 
-        {/* --- BAGIAN KANAN YANG TADI HILANG (DI SINI) --- */}
+        {/* BAGIAN KANAN */}
         <div className="flex items-center gap-2 md:gap-4">
 
           {/* Icon Search */}
@@ -111,7 +110,7 @@ export default function Header({ setSearchTerm, cartItems = [] }) {
             <span className="text-[11px] font-bold uppercase tracking-widest">Akun</span>
           </button>
 
-          {/* Tombol ORDER Hitam */}
+          {/* Tombol ORDER */}
           <Link
             to="/katalog-detail"
             className="bg-black text-white px-8 py-2.5 text-[11px] font-bold uppercase tracking-[0.2em] rounded-full hover:bg-zinc-800 transition-all active:scale-95 ml-2 shadow-lg shadow-black/10"
