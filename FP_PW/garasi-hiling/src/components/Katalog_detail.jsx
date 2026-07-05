@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
 
-const KatalogDetail = ({ isLoggedIn = false }) => { 
+// 🟢 1. PERBAIKAN: Tangkap prop 'searchTerm' dari App.jsx di sini
+const KatalogDetail = ({ isLoggedIn = false, searchTerm = '' }) => { 
   const [filter, setFilter] = useState('all');
   const [showModal, setShowModal] = useState(false);
   const [activeCar, setActiveCar] = useState(null);
@@ -17,7 +18,7 @@ const KatalogDetail = ({ isLoggedIn = false }) => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get('https://6a11f1ef3e35d0f37ee3d6d8.mockapi.io/api/v1/katalog');
+        const response = await axios.get('http://localhost:5000/api/mobil');
         setAllVehicles(response.data);
       } catch (error) {
         console.error("Gagal mengambil data mobil:", error);
@@ -32,7 +33,6 @@ const KatalogDetail = ({ isLoggedIn = false }) => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-
 
   // 🛠️ FUNGSI INTERSEPTOR: Proteksi dipindah ke sini (hanya saat klik Order)
   const handleOrder = (car) => {
@@ -53,6 +53,13 @@ const KatalogDetail = ({ isLoggedIn = false }) => {
     }
   };
 
+  // 🟢 2. LOGIKA PROSES FILTER SEARCH NAVBAR:
+  // Menyaring data mentah dari database berdasarkan teks pencarian yang diketik di navbar
+  const searchedVehicles = allVehicles.filter(unit => 
+    (unit.name && unit.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (unit.category && unit.category.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
   // --- RENDER LOADING STATE ---
   if (isLoading) {
     return (
@@ -65,12 +72,13 @@ const KatalogDetail = ({ isLoggedIn = false }) => {
 
   // --- RENDER CATEGORIES ---
   const renderAllCategory = () => {
+    // 🟢 PERBAIKAN: Gunakan searchedVehicles, bukan allVehicles mentah
     return (
       <div className="mb-24">
         <h2 className="text-xl font-black uppercase tracking-[0.4em] mb-10 text-slate-300 border-b pb-4 italic">/ All Collections</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {allVehicles.map(unit => (
-            <div key={unit.id} className="group bg-white border border-slate-100 rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col">
+          {searchedVehicles.map(unit => (
+            <div key={unit.id_mobil || unit.id} className="group bg-white border border-slate-100 rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col">
               <div className="relative h-64 overflow-hidden">
                 <img src={unit.img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={unit.name} />
                 <div className="absolute top-4 left-4">
@@ -100,13 +108,14 @@ const KatalogDetail = ({ isLoggedIn = false }) => {
   };
 
   const renderSportCategory = () => {
-    const sports = allVehicles.filter(v => v.category === 'sport');
+    // 🟢 PERBAIKAN: Saring dari searchedVehicles agar gabungan search + tabs kategori berfungsi
+    const sports = searchedVehicles.filter(v => v.category === 'sport');
     return (
       <div className="mb-24">
         <h2 className="text-xl font-black uppercase tracking-[0.4em] mb-10 text-slate-300 border-b pb-4">/ Sport Performance</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {sports.map(unit => (
-            <div key={unit.id} className="group bg-white border border-slate-100 rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500">
+            <div key={unit.id_mobil || unit.id} className="group bg-white border border-slate-100 rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500">
               <div className="relative h-60 overflow-hidden">
                 <img src={unit.img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={unit.name} />
               </div>
@@ -123,12 +132,13 @@ const KatalogDetail = ({ isLoggedIn = false }) => {
   };
 
   const renderSUVCategory = () => {
-    const suvs = allVehicles.filter(v => v.category === 'suv');
+    // 🟢 PERBAIKAN: Saring dari searchedVehicles
+    const suvs = searchedVehicles.filter(v => v.category === 'suv');
     return (
       <div className="mb-24 space-y-24">
         <h2 className="text-xl font-black uppercase tracking-[0.4em] text-slate-300 border-b pb-4">/ Premium SUV Series</h2>
         {suvs.map((unit, index) => (
-          <div key={unit.id} className={`flex flex-col md:flex-row items-center gap-12 ${index % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}>
+          <div key={unit.id_mobil || unit.id} className={`flex flex-col md:flex-row items-center gap-12 ${index % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}>
             <div className="w-full md:w-1/2">
               <div className="relative h-[400px] rounded-[40px] overflow-hidden shadow-2xl group">
                 <img src={unit.img} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700" alt={unit.name} />
@@ -147,13 +157,14 @@ const KatalogDetail = ({ isLoggedIn = false }) => {
   };
 
   const renderMPVCategory = () => {
-    const mpvs = allVehicles.filter(v => v.category === 'mpv');
+    // 🟢 PERBAIKAN: Saring dari searchedVehicles
+    const mpvs = searchedVehicles.filter(v => v.category === 'mpv');
     return (
       <div className="mb-24">
         <h2 className="text-xl font-black uppercase tracking-[0.4em] mb-10 text-slate-300 border-b pb-4">/ Elite MPV</h2>
         <div className="grid grid-cols-1 gap-10">
           {mpvs.map(unit => (
-            <div key={unit.id} className="flex flex-col md:flex-row bg-black rounded-[32px] overflow-hidden border border-white hover:border-red-600/50 transition-all duration-500">
+            <div key={unit.id_mobil || unit.id} className="flex flex-col md:flex-row bg-black rounded-[32px] overflow-hidden border border-white hover:border-red-600/50 transition-all duration-500">
               <div className="w-full md:w-1/2 h-120">
                 <img src={unit.img} className="w-full h-full object-cover opacity-80" alt={unit.name} />
               </div>
@@ -178,6 +189,12 @@ const KatalogDetail = ({ isLoggedIn = false }) => {
           THE <span className="text-red-600">LINEUP</span>
         </h1>
         <div className="w-24 h-2 bg-red-600 mx-auto mt-4 mb-8"></div>
+        {/* 🟢 Tampilan info pencarian opsional */}
+        {searchTerm && (
+          <p className="text-sm font-bold text-slate-400 uppercase tracking-wider">
+            Hasil pencarian untuk: <span className="text-red-600">"{searchTerm}"</span> ({searchedVehicles.length} ditemukan)
+          </p>
+        )}
       </div>
 
       {/* FILTER TABS */}
@@ -195,10 +212,20 @@ const KatalogDetail = ({ isLoggedIn = false }) => {
 
       {/* MAIN CONTENT AREA */}
       <div className="max-w-7xl mx-auto px-8">
-        {filter === 'all' && renderAllCategory()}
-        {filter === 'sport' && renderSportCategory()}
-        {filter === 'suv' && renderSUVCategory()}
-        {filter === 'mpv' && renderMPVCategory()}
+        {/* 🟢 Jika hasil pencarian tidak ada yang cocok */}
+        {searchedVehicles.length === 0 ? (
+          <div className="text-center py-20 border border-dashed border-slate-200 rounded-3xl">
+            <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Mohon Maaf, Unit Tidak Ditemukan</p>
+            <p className="text-xs text-slate-300 mt-1">Coba gunakan kata kunci model kendaraan lain.</p>
+          </div>
+        ) : (
+          <>
+            {filter === 'all' && renderAllCategory()}
+            {filter === 'sport' && renderSportCategory()}
+            {filter === 'suv' && renderSUVCategory()}
+            {filter === 'mpv' && renderMPVCategory()}
+          </>
+        )}
       </div>
 
       {/* MODAL */}

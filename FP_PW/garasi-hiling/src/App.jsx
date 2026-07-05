@@ -23,23 +23,24 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userAccount, setUserAccount] = useState(null);
-
-  // State untuk menampung pesan promo otomatis
   const [promoMessage, setPromoMessage] = useState('');
 
-  // Hook untuk pindah halaman secara programmatik
   const navigate = useNavigate();
 
-  // 🟢 SINKRONISASI API UTAMA: Mengambil lineup mobil langsung dari database MySQL via Express
+  // Ambil data murni dari database MySQL lokal
   useEffect(() => {
     const fetchGlobalVehicles = async () => {
       try {
         setLoading(true);
-        // Diarahkan ke server localhost Express port 5000 kamu
         const response = await axios.get('http://localhost:5000/api/mobil');
-        setCars(response.data);
+        if (Array.isArray(response.data)) {
+          setCars(response.data);
+        } else {
+          setCars([]);
+        }
       } catch (error) {
         console.error("Gagal sinkronisasi API Utama Showroom dari backend Express:", error);
+        setCars([]); 
       } finally {
         setLoading(false);
       }
@@ -48,26 +49,21 @@ export default function App() {
     fetchGlobalVehicles();
   }, []);
 
-  // Fungsi untuk menangani klik "Ambil Promo"
   const handleTakePromo = (promoTitle) => {
     setPromoMessage(`Halo GarasiHiling, saya tertarik dengan promo: ${promoTitle}. Mohon info selengkapnya.`);
     navigate('/contact'); 
   };
 
-  // 🟢 PERBAIKAN: Mengubah car.title menjadi car.name sesuai kolom database MySQL kamu
+  // Filter sinkron Live Search menggunakan kolom data real database (.name)
   const filteredCars = cars.filter(car =>
     car.name && car.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="w-full bg-white font-sans text-slate-900 scroll-smooth">
-      {/* 1. SCROLL MANAGEMENT TO TOP */}
       <ScrollToTop />
-
-      {/* 2. NAVIGATION (Selalu muncul di atas) */}
       <Header setSearchTerm={setSearchTerm} />
 
-      {/* 3. MAIN CONTENT AREA MENGGUNAKAN ROUTES */}
       <main className="min-h-screen">
         <Routes>
           {/* --- HALAMAN HOME --- */}
@@ -86,10 +82,7 @@ export default function App() {
                   <h1 className="text-6xl md:text-8xl font-bold tracking-tighter uppercase italic">SUPRA G90</h1>
                   <p className="text-lg md:text-xl mt-4 font-light tracking-widest text-slate-300">FUTURE OF PERFORMANCE</p>
                   <div className="mt-10 flex gap-4 justify-center">
-                    <button
-                      onClick={() => navigate('/katalog-detail')}
-                      className="px-10 py-3 bg-white text-black font-bold uppercase text-xs hover:bg-red-600 hover:text-white transition-all"
-                    >
+                    <button onClick={() => navigate('/katalog-detail')} className="px-10 py-3 bg-white text-black font-bold uppercase text-xs hover:bg-red-600 hover:text-white transition-all">
                       Order Now
                     </button>
                   </div>
@@ -103,54 +96,26 @@ export default function App() {
                     <p className="text-gray-500 mt-2">Pilih unit masa depan Anda hari ini.</p>
                   </div>
                 </div>
-                {/* 🟢 Menyertakan filteredCars dan searchTerm agar sinkronisasi filter di Katalog berjalan mulus */}
-                <Katalog cars={filteredCars} loading={loading} isLoggedIn={isLoggedIn} searchTerm={searchTerm} />
+                {/* Salurkan data murni database ke Katalog */}
+                <Katalog cars={filteredCars} loading={loading} searchTerm={searchTerm} isLoggedIn={isLoggedIn} />
               </div>
             </>
           } />
 
-          {/* --- ROUTE LAINNYA --- */}
           <Route path="/katalog-detail" element={<KatalogDetail isLoggedIn={isLoggedIn} searchTerm={searchTerm} />} />
-          
-          {/* Halaman Otentikasi */}
           <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUserAccount={setUserAccount} />} />
           <Route path="/register" element={<Register />} />
-
-          <Route path="/promo" element={
-            <div className="py-12">
-              <Promo onTakePromo={handleTakePromo} />
-            </div>
-          } />
-
+          <Route path="/promo" element={<div className="py-12"><Promo onTakePromo={handleTakePromo} /></div>} />
           <Route path="/tentang" element={<Tentang />} />
           <Route path="/lokasi" element={<Lokasi />} />
           <Route path="/testimoni" element={<Testimoni />} />
           <Route path="/servis" element={<Servis />} />
-          
-          {/* Halaman Profile */}
-          <Route 
-            path="/profile" 
-            element={
-              <Profile 
-                isLoggedIn={isLoggedIn} 
-                userAccount={userAccount} 
-                setIsLoggedIn={setIsLoggedIn} 
-                setUserAccount={setUserAccount} 
-              />
-            } 
-          />
-          
+          <Route path="/profile" element={<Profile isLoggedIn={isLoggedIn} userAccount={userAccount} setIsLoggedIn={setIsLoggedIn} setUserAccount={setUserAccount} />} />
           <Route path="/faq" element={<FAQ />} />
-
-          <Route path="/contact" element={
-            <div className="max-w-7xl mx-auto px-6 py-24">
-              <ContactUs initialMessage={promoMessage} />
-            </div>
-          } />
+          <Route path="/contact" element={<div className="max-w-7xl mx-auto px-6 py-24"><ContactUs initialMessage={promoMessage} /></div>} />
         </Routes>
       </main>
 
-      {/* 4. FOOTER (Selalu muncul di bawah) */}
       <Footer />
     </div>
   );

@@ -13,5 +13,5 @@ router.get('/', async (req, res) => {
     }
 });
 
-// 🔴 TAMBAHKAN BARIS INI DI PALING BAWAH 🔴
+
 export default router;

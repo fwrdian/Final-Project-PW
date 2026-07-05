@@ -16,9 +16,9 @@ router.post('/register', async (req, res) => {
         if (existingUser.length > 0) {
             return res.status(400).json({ success: false, message: 'Email sudah terdaftar!' });
         }
-
         const queryInsert = `INSERT INTO user (nama, email, password, role_user) VALUES (?, ?, ?, 'pelanggan')`;
         await db.query(queryInsert, [nama, email, password]);
+
 
         return res.status(201).json({ success: true, message: 'Registrasi berhasil! Silakan login.' });
     } catch (error) {

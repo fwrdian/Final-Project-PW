@@ -1,20 +1,25 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
 
 const Login = ({ setIsLoggedIn, setUserAccount }) => { 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
-  // State untuk informasi loading dan error feedback ke user
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Tangkap data mobil yang dikirim oleh Katalog via state router (jika ada)
   const intendedCar = location.state?.intendedCar;
+
+  // 🟢 TRIDER TRICK: Paksa bersihkan state sesaat setelah komponen dimuat pertama kali
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setEmail('');
+      setPassword('');
+    }, 50);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,14 +27,11 @@ const Login = ({ setIsLoggedIn, setUserAccount }) => {
 
     try {
       setLoading(true);
-
-      // 1. MENGIRIM DATA: Menembak ke API Auth Login Express
       const response = await axios.post('http://localhost:5000/api/auth/login', {
         email: email,
         password: password
       });
 
-      // 2. Jika Backend merespon dengan status Sukses (200 / success: true)
       if (response.data.success) {
         if (setIsLoggedIn) setIsLoggedIn(true); 
         if (setUserAccount) {
@@ -41,12 +43,9 @@ const Login = ({ setIsLoggedIn, setUserAccount }) => {
         }
 
         alert(`Selamat datang kembali! Login berhasil.`);
-
-        // KOSONGKAN KOLOM INPUT
         setEmail('');
         setPassword('');
 
-        // 3. JALUR REDIRECT:
         if (intendedCar) {
           navigate('/contact', { 
             state: { 
@@ -59,20 +58,12 @@ const Login = ({ setIsLoggedIn, setUserAccount }) => {
         }
       }
     } catch (error) {
-      // 🟢 OLEH KARENA LOGIN GAGAL (Salah PW / Email tidak terdaftar)
       let pesanError = 'Gagal terhubung ke server backend.';
-      
       if (error.response && error.response.data && error.response.data.message) {
         pesanError = error.response.data.message;
       }
-
-      // Tampilkan Pop-up Alert Error ke Layar
       alert(`[ LOGIN GAGAL ]\n${pesanError}`);
-      
-      // Simpan ke state untuk cadangan teks error di bawah header
       setErrorMessage(pesanError);
-
-      // KOSONGKAN KOLOM PASSWORD SAAT GAGAL (supaya bisa langsung ketik ulang)
       setPassword('');
     } finally {
       setLoading(false);
@@ -93,7 +84,6 @@ const Login = ({ setIsLoggedIn, setUserAccount }) => {
             [ Authentication Required ]
           </p>
 
-          {/* NOTIFIKASI JIKA MAU PESAN MOBIL */}
           {intendedCar && (
             <div className="mt-4 p-3 bg-red-50 border-2 border-red-600 text-[10px] font-black text-red-600 uppercase tracking-wider animate-pulse">
               [ SYSTEM_NOTICE: LOGIN REQUIRED TO ORDER {intendedCar.name} ]
@@ -101,43 +91,48 @@ const Login = ({ setIsLoggedIn, setUserAccount }) => {
           )}
         </div>
 
-        {/* 🟢 KETERANGAN ERROR DI BAWAH HEADER Halaman */}
         {errorMessage && (
           <div className="mb-6 p-3 border-2 border-red-600 bg-red-50 text-[11px] font-black uppercase tracking-wider text-red-600 shadow-[2px_2px_0px_0px_rgba(220,38,38,1)]">
             [ PERINGATAN ]: {errorMessage}
           </div>
         )}
 
-        {/* Menggunakan autocomplete="off" standar demi kelancaran state */}
         <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off">
-          {/* EMAIL INPUT */}
+          
+          {/* 🟢 DUMMY INPUTS (Umpan palsu agar browser mengisi kolom tersembunyi ini, bukan kolom asli) */}
+          <input type="text" name="email" style={{ display: 'none' }} aria-hidden="true" autoComplete="false" />
+          <input type="password" name="password" style={{ display: 'none' }} aria-hidden="true" autoComplete="false" />
+
+          {/* EMAIL INPUT ASLI */}
           <div>
             <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">
               [01] Email
             </label>
             <input
               type="email"
+              name="real-email-input" // Ganti nama agar tidak dideteksi engine bot browser
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="ENTER EMAIL ADDRESS"
-              autoComplete="none"
+              autoComplete="new-password" // Trik agar dianggap sebagai form baru
               className="w-full p-4 border-2 border-zinc-900 font-bold uppercase text-xs tracking-wider placeholder-zinc-300 focus:outline-none focus:bg-zinc-50 focus:border-red-600 transition-colors"
             />
           </div>
 
-          {/* PASSWORD INPUT */}
+          {/* PASSWORD INPUT ASLI */}
           <div>
             <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">
               [02] Password
             </label>
             <input
               type="password"
+              name="real-password-input" // Ganti nama agar terhindar dari autofill otomatis
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
-              autoComplete="none"
+              autoComplete="new-password"
               className="w-full p-4 border-2 border-zinc-900 font-bold uppercase text-xs tracking-wider placeholder-zinc-300 focus:outline-none focus:bg-zinc-50 focus:border-red-600 transition-colors"
             />
           </div>
