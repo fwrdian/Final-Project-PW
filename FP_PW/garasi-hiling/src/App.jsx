@@ -16,6 +16,9 @@ import FAQ from './components/Faq';
 import ScrollToTop from './components/ScrollToTop';
 import Login from "./components/Login";
 import Register from "./components/Register"; 
+import Merchandise from './components/Merchandise';
+import SukuCadang from './components/SukuCadang';
+import Cart from './components/Cart';
 
 export default function App() {
   const [cars, setCars] = useState([]);
@@ -27,7 +30,44 @@ export default function App() {
 
   const navigate = useNavigate();
 
-  // Ambil data murni dari database MySQL lokal
+  // AmbilS data murni dari database MySQL lokal
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  // State untuk menampung pesan promo otomatis
+  const [promoMessage, setPromoMessage] = useState('');
+
+  // State cart
+  const [cartItems, setCartItems] = useState([]);
+
+  // Hook untuk pindah halaman secara programmatik
+  const navigate = useNavigate();
+
+  // Tambah ke cart. Jika id+type sama, increment quantity
+  const addToCart = (product) => {
+    setCartItems(prev => {
+      const exists = prev.find(i => i.id === product.id && i.type === product.type);
+      if (exists) return prev.map(i =>
+        i.id === product.id && i.type === product.type
+          ? { ...i, quantity: i.quantity + 1 }
+          : i
+      );
+      return [...prev, { ...product, quantity: 1 }];
+    });
+  };
+
+  // Hapus item dari cart berdasarkan id dan type
+  const removeFromCart = (id, type) => {
+    setCartItems(prev => prev.filter(i => !(i.id === id && i.type === type)));
+  };
+
+  // Update quantity, jika qty <= 0 hapus item
+  const updateQuantity = (id, type, qty) => {
+    if (qty <= 0) return removeFromCart(id, type);
+    setCartItems(prev => prev.map(i =>
+      i.id === id && i.type === type ? { ...i, quantity: qty } : i
+    ));
+  };
+
   useEffect(() => {
     const fetchGlobalVehicles = async () => {
       try {
@@ -60,9 +100,10 @@ export default function App() {
   );
 
   return (
-    <div className="w-full bg-white font-sans text-slate-900 scroll-smooth">
-      <ScrollToTop />
-      <Header setSearchTerm={setSearchTerm} />
+    <div className="size-full h-screen overflow-y-auto bg-white font-sans text-slate-900 scroll-smooth">
+
+      {/* 1. NAVIGATION */}
+      <Header setSearchTerm={setSearchTerm} cartItems={cartItems} />
 
       <main className="min-h-screen">
         <Routes>
@@ -82,7 +123,10 @@ export default function App() {
                   <h1 className="text-6xl md:text-8xl font-bold tracking-tighter uppercase italic">SUPRA G90</h1>
                   <p className="text-lg md:text-xl mt-4 font-light tracking-widest text-slate-300">FUTURE OF PERFORMANCE</p>
                   <div className="mt-10 flex gap-4 justify-center">
-                    <button onClick={() => navigate('/katalog-detail')} className="px-10 py-3 bg-white text-black font-bold uppercase text-xs hover:bg-red-600 hover:text-white transition-all">
+                    <button
+                      onClick={() => navigate('/katalog-detail')}
+                      className="px-10 py-3 bg-white text-black font-bold uppercase text-xs hover:bg-red-600 hover:text-white transition-all"
+                    >
                       Order Now
                     </button>
                   </div>
@@ -113,6 +157,16 @@ export default function App() {
           <Route path="/profile" element={<Profile isLoggedIn={isLoggedIn} userAccount={userAccount} setIsLoggedIn={setIsLoggedIn} setUserAccount={setUserAccount} />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<div className="max-w-7xl mx-auto px-6 py-24"><ContactUs initialMessage={promoMessage} /></div>} />
+          {/* --- ROUTES BELANJA --- */}
+          <Route path="/belanja/merchandise" element={<Merchandise addToCart={addToCart} />} />
+          <Route path="/belanja/suku-cadang" element={<SukuCadang addToCart={addToCart} />} />
+          <Route path="/cart" element={
+            <Cart
+              cartItems={cartItems}
+              onRemove={removeFromCart}
+              onUpdateQuantity={updateQuantity}
+            />
+          } />
         </Routes>
       </main>
 
