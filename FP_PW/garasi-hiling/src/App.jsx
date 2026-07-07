@@ -27,19 +27,8 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userAccount, setUserAccount] = useState(null);
   const [promoMessage, setPromoMessage] = useState('');
-
-  const navigate = useNavigate();
-
-  // AmbilS data murni dari database MySQL lokal
-  const [selectedCategory, setSelectedCategory] = useState('all');
-
-  // State untuk menampung pesan promo otomatis
-  const [promoMessage, setPromoMessage] = useState('');
-
-  // State cart
   const [cartItems, setCartItems] = useState([]);
 
-  // Hook untuk pindah halaman secara programmatik
   const navigate = useNavigate();
 
   // Tambah ke cart. Jika id+type sama, increment quantity
@@ -100,12 +89,15 @@ export default function App() {
   );
 
   return (
-    <div className="size-full h-screen overflow-y-auto bg-white font-sans text-slate-900 scroll-smooth">
+    <div className="w-full min-h-screen bg-white font-sans text-slate-900 scroll-smooth">
+      {/* 1. SCROLL TO TOP */}
+      <ScrollToTop />
 
-      {/* 1. NAVIGATION */}
+      {/* 2. NAVIGATION */}
       <Header setSearchTerm={setSearchTerm} cartItems={cartItems} />
 
-      <main className="min-h-screen">
+      {/* 3. MAIN CONTENT */}
+      <main className="pt-20">
         <Routes>
           {/* --- HALAMAN HOME --- */}
           <Route path="/" element={
@@ -140,7 +132,6 @@ export default function App() {
                     <p className="text-gray-500 mt-2">Pilih unit masa depan Anda hari ini.</p>
                   </div>
                 </div>
-                {/* Salurkan data murni database ke Katalog */}
                 <Katalog cars={filteredCars} loading={loading} searchTerm={searchTerm} isLoggedIn={isLoggedIn} />
               </div>
             </>
@@ -157,6 +148,7 @@ export default function App() {
           <Route path="/profile" element={<Profile isLoggedIn={isLoggedIn} userAccount={userAccount} setIsLoggedIn={setIsLoggedIn} setUserAccount={setUserAccount} />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<div className="max-w-7xl mx-auto px-6 py-24"><ContactUs initialMessage={promoMessage} /></div>} />
+          
           {/* --- ROUTES BELANJA --- */}
           <Route path="/belanja/merchandise" element={<Merchandise addToCart={addToCart} />} />
           <Route path="/belanja/suku-cadang" element={<SukuCadang addToCart={addToCart} />} />
@@ -170,6 +162,7 @@ export default function App() {
         </Routes>
       </main>
 
+      {/* 4. FOOTER */}
       <Footer />
     </div>
   );
