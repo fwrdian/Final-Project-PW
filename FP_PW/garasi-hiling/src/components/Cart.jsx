@@ -127,8 +127,11 @@ export default function Cart({ cartItems = [], onUpdateQuantity, onRemove }) {
           </div>
 
           <div className="flex gap-3 mt-2">
+            {/* Redirect ke halaman Katalog. Route "/katalog" di-alias ke "/katalog-detail"
+                di App.jsx (lihat komentar di sana) karena itulah halaman katalog yang
+                sudah ada di project ini. */}
             <button
-              onClick={() => navigate('/promo')}
+              onClick={() => navigate('/katalog')}
               className="px-8 py-3 bg-blue-600 text-white text-sm font-semibold rounded hover:bg-blue-700 transition-colors"
             >
               Mulai Belanja
