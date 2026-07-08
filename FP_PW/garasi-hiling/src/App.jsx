@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'; // Tambahkan ini
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Katalog from './components/Katalog';
@@ -20,6 +20,7 @@ import Merchandise from './components/Merchandise';
 import SukuCadang from './components/SukuCadang';
 import Cart from './components/Cart';
 import Checkout from './components/Checkout';
+import ArtikelPage from './components/Artikel';
 
 export default function App() {
   const [cars, setCars] = useState([]);
@@ -32,7 +33,6 @@ export default function App() {
 
   const navigate = useNavigate();
 
-  // Tambah ke cart. Jika id+type sama, increment quantity
   const addToCart = (product) => {
     setCartItems(prev => {
       const exists = prev.find(i => i.id === product.id && i.type === product.type);
@@ -45,12 +45,10 @@ export default function App() {
     });
   };
 
-  // Hapus item dari cart berdasarkan id dan type
   const removeFromCart = (id, type) => {
     setCartItems(prev => prev.filter(i => !(i.id === id && i.type === type)));
   };
 
-  // Update quantity, jika qty <= 0 hapus item
   const updateQuantity = (id, type, qty) => {
     if (qty <= 0) return removeFromCart(id, type);
     setCartItems(prev => prev.map(i =>
@@ -58,7 +56,6 @@ export default function App() {
     ));
   };
 
-  // Kosongkan cart setelah pembayaran QRIS di Checkout.jsx berhasil
   const clearCart = () => setCartItems([]);
 
   useEffect(() => {
@@ -87,23 +84,18 @@ export default function App() {
     navigate('/contact'); 
   };
 
-  // Filter sinkron Live Search menggunakan kolom data real database (.name)
   const filteredCars = cars.filter(car =>
     car.name && car.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="w-full min-h-screen bg-white font-sans text-slate-900 scroll-smooth">
-      {/* 1. SCROLL TO TOP */}
       <ScrollToTop />
 
-      {/* 2. NAVIGATION */}
       <Header setSearchTerm={setSearchTerm} cartItems={cartItems} />
 
-      {/* 3. MAIN CONTENT */}
       <main className="pt-20">
         <Routes>
-          {/* --- HALAMAN HOME --- */}
           <Route path="/" element={
             <>
               <section className="relative h-screen flex items-center justify-center overflow-hidden bg-black">
@@ -153,7 +145,8 @@ export default function App() {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<div className="max-w-7xl mx-auto px-6 py-24"><ContactUs initialMessage={promoMessage} /></div>} />
           
-          {/* --- ROUTES BELANJA --- */}
+          <Route path="/artikel" element={<ArtikelPage />} />
+          
           <Route path="/belanja/merchandise" element={<Merchandise addToCart={addToCart} />} />
           <Route path="/belanja/suku-cadang" element={<SukuCadang addToCart={addToCart} />} />
           <Route path="/cart" element={
@@ -164,19 +157,8 @@ export default function App() {
             />
           } />
 
-          {/* Alias: project ini belum punya route "/katalog" sungguhan — halaman
-              katalog yang sudah ada terdaftar di "/katalog-detail" (lihat Header.jsx
-              & Katalog.jsx). Alias ini dibuat supaya tombol "Mulai Belanja" di
-              Cart.jsx yang mengarah ke "/katalog" tetap berfungsi tanpa perlu
-              mengubah route lain yang sudah dipakai tim. Hapus alias ini kalau
-              suatu saat "/katalog" dipakai untuk halaman yang benar-benar baru. */}
           <Route path="/katalog" element={<Navigate to="/katalog-detail" replace />} />
 
-          {/* Halaman Checkout — terintegrasi dengan pengecekan login (baca token
-              dari localStorage, lihat komentar di Checkout.jsx) dan pembayaran QRIS.
-              Route "/login" belum didaftarkan di sini karena halaman Login/Register
-              dikerjakan oleh tim lain; begitu Login.jsx & route-nya ditambahkan,
-              redirect dari Checkout.jsx akan otomatis berfungsi. */}
           <Route path="/checkout" element={
             <Checkout
               cartItems={cartItems}
@@ -186,7 +168,6 @@ export default function App() {
         </Routes>
       </main>
 
-      {/* 4. FOOTER */}
       <Footer />
     </div>
   );

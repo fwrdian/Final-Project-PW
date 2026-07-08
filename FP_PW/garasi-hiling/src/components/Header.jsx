@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 
+
 export default function Header({ setSearchTerm, cartItems = [] }) {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -65,7 +66,8 @@ export default function Header({ setSearchTerm, cartItems = [] }) {
           <NavLink to="/" className={navStyle}>Home</NavLink>
           <NavLink to="/katalog-detail" className={navStyle}>Katalog</NavLink>
           <NavLink to="/promo" className={navStyle}>Promo</NavLink>
-          {/* DROPDOWN 1: BELANJA (LAINNYA) */}
+          
+          {/* DROPDOWN 1: BELANJA */}
           <div
             className="relative"
             onMouseEnter={() => setDropdownOpen(true)}
@@ -97,6 +99,7 @@ export default function Header({ setSearchTerm, cartItems = [] }) {
               </div>
             )}
           </div>
+
           {/* DROPDOWN 2: PERUSAHAAN */}
           <div 
             className="relative"
@@ -125,6 +128,7 @@ export default function Header({ setSearchTerm, cartItems = [] }) {
               </div>
             )}
           </div>
+          <NavLink to="/artikel" className={navStyle}>Artikel</NavLink>
         </div>
 
         {/* UTILITY ACTION ICONS (BAGIAN KANAN) */}

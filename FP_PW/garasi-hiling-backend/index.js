@@ -12,6 +12,7 @@ import checkoutRoutes from './routes/checkout.js';
 import paymentRoutes from './routes/payment.js';
 import merchandiseRoutes from './routes/merchandise.js';
 import sukuCadangRoutes from './routes/sukuCadang.js';
+import artikelRoutes from './routes/artikel.js';
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use('/api/pemesanan', pemesananRoutes);
 app.use('/api/testimoni', testimoniRoutes); 
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/artikel', artikelRoutes);
 
 // ── Modul: Cart, Checkout, Merchandise, Suku Cadang ───────────────────
 app.use('/api/cart', cartRoutes);
