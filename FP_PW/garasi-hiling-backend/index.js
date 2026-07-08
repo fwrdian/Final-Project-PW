@@ -7,6 +7,11 @@ import pemesananRoutes from './routes/pemesanan.js';
 import testimoniRoutes from './routes/testimoni.js'; 
 import userRoutes from './routes/user.js';     
 import authRoutes from './routes/auth.js';
+import cartRoutes from './routes/cart.js';
+import checkoutRoutes from './routes/checkout.js';
+import paymentRoutes from './routes/payment.js';
+import merchandiseRoutes from './routes/merchandise.js';
+import sukuCadangRoutes from './routes/sukuCadang.js';
 
 dotenv.config();
 
@@ -22,6 +27,13 @@ app.use('/api/pemesanan', pemesananRoutes);
 app.use('/api/testimoni', testimoniRoutes); 
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
+
+// ── Modul: Cart, Checkout, Merchandise, Suku Cadang ───────────────────
+app.use('/api/cart', cartRoutes);
+app.use('/api/checkout', checkoutRoutes);
+app.use('/api/payment', paymentRoutes);
+app.use('/api/merchandise', merchandiseRoutes);
+app.use('/api/sukucadang', sukuCadangRoutes);
 
 app.get('/', (req, res) => {
     res.send('Server GarasiHiling Backend Running...');
