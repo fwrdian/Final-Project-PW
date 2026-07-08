@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-// ── Suku Cadang Imports ────────────────────────────────────────────────────
 import imgAki             from '../assets/AkiGS.jpg';
 import imgAlternator      from '../assets/AlternatorAssy.jpeg';
 import imgBallJoint       from '../assets/BallJointDepan.jpeg';
@@ -18,8 +17,6 @@ import imgOliCastrol      from '../assets/olimesin.jpeg';
 import imgShockAbsorber   from '../assets/ShockAbsorber.jpeg';
 import imgTimingChain     from '../assets/TimingChainKit.jpg';
 import imgWaterpump       from '../assets/waterpump.jpg';
-
-// ── Aksesori & Upgrade Imports ─────────────────────────────────────────────
 import imgBridgestone     from '../assets/BRIDGESTONEBridgestoneTuranza.jpg';
 import imgMichelin        from '../assets/Michelin.jpeg';
 import imgYokohama        from '../assets/Yokohama.jpg';
@@ -32,7 +29,6 @@ import imgVKOOL           from '../assets/VKOOLVK40Nano.jpg';
 import imgPioneer         from '../assets/PioneerDMHZ5350BT.jpg';
 import imgFloorMat        from '../assets/FloorMatLuxury.jpeg';
 import imgTRD             from '../assets/TRD.jpg';
-// ──────────────────────────────────────────────────────────────────────────
 
 const categories = [
   { id: 'all',         label: 'Semua' },
@@ -50,7 +46,6 @@ const categories = [
 ];
 
 const products = [
-  // ── SUKU CADANG ──────────────────────────────────────────────────────────
   {
     id: 1,  category: 'filter',      badge: null,
     name: 'Filter Oli Toyota Genuine',   code: 'TO-90915-YZZD2',
@@ -259,14 +254,9 @@ function ProductImage({ src, alt }) {
   );
 }
 
-// ── Axios: 10 pemanggilan API endpoint berbeda untuk halaman SukuCadang ────
-// Base URL dummy — ganti sesuai backend asli saat sudah tersedia.
 const SPAREPART_API = '/api/sukucadang';
-
-// 1-10: Ambil detail/stok real-time untuk masing-masing produk (id 1..10)
 const fetchSukuCadangById = (id) => axios.get(`${SPAREPART_API}/${id}`);
 
-// Dipakai di event handler saat produk ditambahkan ke keranjang
 const postReserveStock = (product) =>
   axios.post(`${SPAREPART_API}/${product.id}/reserve`, { quantity: 1 });
 
@@ -277,8 +267,6 @@ export default function SukuCadang({ addToCart }) {
   const [notification, setNotification] = useState('');
   const [liveStock, setLiveStock] = useState({});
 
-  // Jalankan 10 pemanggilan Axios secara PARALEL saat halaman dimuat,
-  // masing-masing ke endpoint /api/sukucadang/1 .. /api/sukucadang/10
   useEffect(() => {
     const ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 

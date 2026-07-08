@@ -3,30 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const fmt = (n) => 'Rp ' + Math.round(n || 0).toLocaleString('id-ID');
-
-// ============================================================================
-// 🔐 TITIK INTEGRASI DENGAN TIM AUTH (Login.jsx / Register.jsx)
-// ----------------------------------------------------------------------------
-// Kontrak yang diharapkan dari halaman Login buatan rekan tim:
-//   - Saat login BERHASIL   -> simpan token di localStorage dengan key TOKEN_KEY
-//   - (opsional) simpan data user (nama, email, dst) di localStorage dengan key
-//     USER_KEY dalam bentuk string hasil JSON.stringify({ name, email, ... })
-//   - Saat logout           -> hapus kedua key tersebut dari localStorage
-//
-// Jika tim Anda memakai nama key yang berbeda (mis. 'authToken', 'accessToken',
-// 'jwt'), cukup ubah 2 konstanta di bawah ini — seluruh logic di komponen ini
-// otomatis mengikuti, tidak perlu diubah di tempat lain.
-// ============================================================================
 const TOKEN_KEY = 'token';
 const USER_KEY = 'user';
-
-// ── Axios: 10 pemanggilan API endpoint berbeda untuk halaman Checkout ──────
-// Base URL dummy — sesuaikan dengan backend asli saat sudah tersedia.
 const CHECKOUT_API = '/api/checkout';
 const PAYMENT_API = '/api/payment';
-
 const withAuth = (token) => ({ headers: { Authorization: `Bearer ${token}` } });
-
 const verifySession          = (token) => axios.get(`${CHECKOUT_API}/verify-session`, withAuth(token));                                    // 1
 const getServerCartItems     = (token) => axios.get(`${CHECKOUT_API}/get-cart-items`, withAuth(token));                                     // 2
 const getUserProfile         = (token) => axios.get(`${CHECKOUT_API}/get-user-profile`, withAuth(token));                                   // 3
@@ -41,19 +22,14 @@ const cancelPayment          = (paymentRef, token) => axios.post(`${PAYMENT_API}
 export default function Checkout({ cartItems: cartItemsFromProps = [], onPaymentSuccess }) {
   const navigate = useNavigate();
 
-  // ── State sesi login ──
   const [checkingSession, setCheckingSession] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
 
-  // ── State data checkout ──
   const [cartItems, setCartItems] = useState(cartItemsFromProps);
   const [shippingAddress, setShippingAddress] = useState(null);
   const [taxRatePercent, setTaxRatePercent] = useState(11);
   const [shippingCost, setShippingCost] = useState(0);
-
-  // ── State alur pembayaran QRIS ──
-  // idle -> validating -> creating_order -> generating_qris -> awaiting_payment -> success | failed | expired
   const [paymentStep, setPaymentStep] = useState('idle');
   const [qrisData, setQrisData] = useState(null); // { orderId, paymentRef, qrString }
   const [secondsLeft, setSecondsLeft] = useState(0);
@@ -64,11 +40,6 @@ export default function Checkout({ cartItems: cartItemsFromProps = [], onPayment
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const tax = Math.round(subtotal * (taxRatePercent / 100));
   const total = subtotal + tax + shippingCost;
-
-  // ────────────────────────────────────────────────────────────────────────
-  // 🔐 LANGKAH 1 — Baca status login dari localStorage (data yang diset oleh
-  // halaman Login.jsx rekan tim). Ini adalah titik integrasi auth utama.
-  // ────────────────────────────────────────────────────────────────────────
   useEffect(() => {
     const token = localStorage.getItem(TOKEN_KEY);
     const rawUser = localStorage.getItem(USER_KEY);
@@ -83,9 +54,6 @@ export default function Checkout({ cartItems: cartItemsFromProps = [], onPayment
       try { setUser(JSON.parse(rawUser)); } catch { /* abaikan jika format tidak sesuai */ }
     }
 
-    // Token ada di localStorage -> anggap login valid (sumber kebenaran utama).
-    // Lalu konfirmasi ke server di background secara best-effort: kalau endpoint
-    // belum tersedia (dummy backend), jangan blokir UI, cukup catat di console.
     setIsLoggedIn(true);
 
     verifySession(token)
@@ -102,13 +70,6 @@ export default function Checkout({ cartItems: cartItemsFromProps = [], onPayment
       })
       .finally(() => setCheckingSession(false));
   }, []);
-
-  // ────────────────────────────────────────────────────────────────────────
-  // LANGKAH 2 — Setelah dipastikan login, ambil data pendukung checkout
-  // secara paralel: cart items versi server, profil/alamat user, tarif pajak,
-  // dan estimasi ongkir. Masing-masing punya fallback agar UI tetap jalan
-  // walau salah satu endpoint dummy belum tersedia.
-  // ────────────────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!isLoggedIn || checkingSession) return;
     const token = localStorage.getItem(TOKEN_KEY);
@@ -156,11 +117,6 @@ export default function Checkout({ cartItems: cartItemsFromProps = [], onPayment
     clearInterval(pollTimerRef.current);
     clearInterval(countdownTimerRef.current);
   };
-
-  // ────────────────────────────────────────────────────────────────────────
-  // Proses pembayaran: validasi stok -> buat order -> generate QRIS -> polling
-  // status pembayaran secara berkala.
-  // ────────────────────────────────────────────────────────────────────────
   const handlePay = async () => {
     const token = localStorage.getItem(TOKEN_KEY);
 
@@ -237,11 +193,6 @@ export default function Checkout({ cartItems: cartItemsFromProps = [], onPayment
         // status === 'pending' -> lanjut polling
       } catch (err) {
         console.warn(`Endpoint check-status belum tersedia (percobaan #${attempt}):`, err.message);
-        // ── SIMULASI DEMO ──────────────────────────────────────────────
-        // Backend pembayaran asli belum tersedia, jadi setelah beberapa kali
-        // polling gagal, alur ini mensimulasikan pembayaran berhasil supaya
-        // UI bisa didemokan end-to-end. Hapus blok if di bawah ini begitu
-        // endpoint /api/payment/check-status yang sesungguhnya sudah aktif.
         if (attempt >= 3) {
           stopTimers();
           setPaymentStep('success');
@@ -278,10 +229,6 @@ export default function Checkout({ cartItems: cartItemsFromProps = [], onPayment
       </div>
     );
   }
-
-  // ────────────────────────────────────────────────────────────────────────
-  // RENDER — belum login: JANGAN tampilkan form checkout, arahkan ke /login
-  // ────────────────────────────────────────────────────────────────────────
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center gap-6 px-6 py-24">
@@ -306,9 +253,6 @@ export default function Checkout({ cartItems: cartItemsFromProps = [], onPayment
     );
   }
 
-  // ────────────────────────────────────────────────────────────────────────
-  // RENDER — sudah login: ringkasan pesanan + panel pembayaran QRIS
-  // ────────────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-white">
       <div className="border-b border-gray-100 px-8 py-5">
@@ -453,9 +397,6 @@ export default function Checkout({ cartItems: cartItemsFromProps = [], onPayment
   );
 }
 
-// ============================================================================
-// Panel QRIS: QR simulasi + status "Menunggu Pembayaran" + countdown
-// ============================================================================
 function QrisPanel({ qrisData, secondsLeft, onCancel }) {
   const minutes = Math.floor(secondsLeft / 60).toString().padStart(2, '0');
   const seconds = (secondsLeft % 60).toString().padStart(2, '0');
@@ -482,9 +423,6 @@ function QrisPanel({ qrisData, secondsLeft, onCancel }) {
   );
 }
 
-// Pola visual ala-QR yang deterministik dari sebuah seed string — BUKAN QR
-// sungguhan, hanya untuk simulasi tampilan sebelum endpoint QRIS asli
-// (/api/payment/generate-qris) terhubung dan mengembalikan gambar/asset QR asli.
 function PseudoQr({ seed = '' }) {
   const size = 11;
 

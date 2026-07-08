@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
-// ── Gambar Produk Merchandise (dari src/assets) ────────────────────────────
-// Catatan: hanya 8 aset unik yang tersedia untuk 11 produk, sehingga 2 gambar
-// dipakai ulang (cap & jersey) sebagai placeholder terdekat. Silakan ganti
-// dengan foto asli produk saat sudah tersedia.
 import imgCircuitCap    from '../assets/id-11134207-7rash-m0y3pcts5dbz61.jpeg';
 import imgSnapback      from '../assets/TRD.jpg';
 import imgPiquePolo     from '../assets/piquepolo.jpeg';
@@ -16,7 +11,6 @@ import imgEnamelPin     from '../assets/gazoo.jpeg';
 import imgCardHolder    from '../assets/cardholder.jpeg';
 import imgWrcLtdSet     from '../assets/wrc.jpeg';
 import imgCollabCap     from '../assets/id-11134207-7rash-m0y3pcts5dbz61.jpeg';
-// ────────────────────────────────────────────────────────────────────────────
 
 const merchCategories = [
   { id: 'all', label: 'All Collection' },
@@ -161,14 +155,10 @@ const merchandise = [
   },
 ];
 
-// ── Axios: 10 pemanggilan API endpoint berbeda untuk halaman Merchandise ──
-// Base URL dummy — ganti sesuai backend asli saat sudah tersedia.
 const API_BASE = '/api/merchandise';
 
-// 1-10: Ambil detail/stok real-time untuk masing-masing produk (id 1..10)
 const fetchMerchandiseById = (id) => axios.get(`${API_BASE}/${id}`);
 
-// Panggilan tambahan yang dipakai pada event handler (bukan bagian dari 10 di atas)
 const postAddToCartApi = (item) =>
   axios.post(`${API_BASE}/${item.id}/add-to-cart`, { quantity: item.quantity ?? 1 });
 
@@ -176,19 +166,16 @@ export default function Merchandise({ addToCart }) {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [notification, setNotification] = useState('');
-  const [liveStock, setLiveStock] = useState({});   // { [id]: stok terbaru dari API }
+  const [liveStock, setLiveStock] = useState({});
   const [apiLoading, setApiLoading] = useState(true);
   const [apiError, setApiError] = useState(null);
 
-  // Jalankan 10 pemanggilan Axios secara PARALEL saat halaman dimuat,
-  // masing-masing ke endpoint /api/merchandise/1 .. /api/merchandise/10
   useEffect(() => {
     const ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     const fetchAllStock = async () => {
       setApiLoading(true);
       try {
-        // Promise.allSettled dipakai supaya 1 endpoint gagal tidak menggagalkan semuanya
         const results = await Promise.allSettled(ids.map(fetchMerchandiseById));
 
         const stockMap = {};
@@ -197,7 +184,6 @@ export default function Merchandise({ addToCart }) {
           if (res.status === 'fulfilled') {
             stockMap[id] = res.value?.data?.stock ?? null;
           } else {
-            // Endpoint dummy belum ada di backend -> tetap tampilkan data statis lokal
             stockMap[id] = null;
           }
         });
@@ -220,10 +206,8 @@ export default function Merchandise({ addToCart }) {
 
   const handleAddToCart = async (item) => {
     try {
-      // Contoh pemanggilan Axios di dalam event handler (POST ke endpoint dummy)
       await postAddToCartApi(item);
     } catch (err) {
-      // Dummy endpoint belum tersedia di backend nyata — tidak menghentikan alur UI
       console.warn('API add-to-cart belum tersedia, melanjutkan secara lokal:', err.message);
     }
     addToCart?.({ ...item, quantity: 1, type: 'merchandise' });
