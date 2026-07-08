@@ -72,7 +72,7 @@ export default function Header({ setSearchTerm, cartItems = [] }) {
             onMouseLeave={() => setDropdownOpen(false)}
           >
             <button className="px-4 py-2 rounded-md transition-colors hover:bg-gray-100 hover:text-red-600 flex items-center gap-1">
-              Belanja
+              BELANJA
               <svg className={`w-3 h-3 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
@@ -97,7 +97,6 @@ export default function Header({ setSearchTerm, cartItems = [] }) {
               </div>
             )}
           </div>
-
           {/* DROPDOWN 2: PERUSAHAAN */}
           <div 
             className="relative"
@@ -105,7 +104,7 @@ export default function Header({ setSearchTerm, cartItems = [] }) {
             onMouseLeave={() => setOpenDropdown(null)}
           >
             <button className={`px-4 py-2 rounded-md transition-colors flex items-center gap-1 ${openDropdown === 'company' ? 'bg-gray-100 text-red-600' : ''}`}>
-              Perusahaan
+              PERUSAHAAN
               <svg className="w-3 h-3 mt-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
