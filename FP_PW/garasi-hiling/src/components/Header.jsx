@@ -97,7 +97,6 @@ export default function Header({ setSearchTerm, cartItems = [] }) {
               </div>
             )}
           </div>
-
           {/* DROPDOWN 2: PERUSAHAAN */}
           <div 
             className="relative"
