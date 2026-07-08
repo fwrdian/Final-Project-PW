@@ -65,9 +65,6 @@ export default function Header({ setSearchTerm, cartItems = [] }) {
           <NavLink to="/" className={navStyle}>Home</NavLink>
           <NavLink to="/katalog-detail" className={navStyle}>Katalog</NavLink>
           <NavLink to="/promo" className={navStyle}>Promo</NavLink>
-          <NavLink to="/lokasi" className={navStyle}>Lokasi</NavLink>
-          <NavLink to="/testimoni" className={navStyle}>Testimoni</NavLink>
-
           {/* DROPDOWN 1: BELANJA (LAINNYA) */}
           <div
             className="relative"
@@ -129,9 +126,6 @@ export default function Header({ setSearchTerm, cartItems = [] }) {
               </div>
             )}
           </div>
-          <NavLink to="/servis" className={navStyle}>Servis</NavLink>
-          <NavLink to="/faq" className={navStyle}>FAQ</NavLink>
-          <NavLink to="/contact" className={navStyle}>Contact</NavLink>
         </div>
 
         {/* UTILITY ACTION ICONS (BAGIAN KANAN) */}

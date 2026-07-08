@@ -168,7 +168,13 @@ const Servis = ({ setActivePage }) => {
               </div>
 
               <button 
-                onClick={() => window.open('https://wa.me/628123456789', '_blank')}
+                onClick={() => {
+                  const daftar = layananTerpilih
+                    .map(l => `• ${l.nama} — Rp ${(l.harga * pricelist.tipe[tipeMobil]).toLocaleString()}`)
+                    .join('\n');
+                  const pesan = `Halo Garasi Hiling!\nSaya ingin booking servis:\n\n*Tipe Kendaraan:* ${tipeMobil.toUpperCase()}\n\n*Layanan:*\n${daftar}\n\n*Estimasi Total: Rp ${totalEstimasi.toLocaleString()}*\n\nMohon konfirmasi jadwalnya. Terima kasih!`;
+                  window.open(`https://wa.me/6287756563631?text=${encodeURIComponent(pesan)}`, '_blank');
+                }}
                 disabled={layananTerpilih.length === 0}
                 className={`w-full py-4 rounded-2xl font-black transition-all text-sm uppercase tracking-widest ${
                   layananTerpilih.length > 0 
@@ -189,7 +195,10 @@ const Servis = ({ setActivePage }) => {
             <p className="text-red-100 max-w-md">Mobil mogok? Tim towing kami siap meluncur ke lokasi Anda sekarang juga.</p>
           </div>
           <button 
-            onClick={() => window.open('https://wa.me/628123456789', '_blank')}
+            onClick={() => {
+              const pesan = `🚨 *DARURAT — Emergency Towing* 🚨\n\nHalo Garasi Hiling!\nMobil saya mogok dan butuh layanan derek segera.\n\nMohon segera hubungi saya. Terima kasih!`;
+              window.open(`https://wa.me/6287756563631?text=${encodeURIComponent(pesan)}`, '_blank');
+            }}
             className="mt-8 md:mt-0 z-10 bg-white text-red-600 px-12 py-4 rounded-full font-black text-lg hover:scale-105 transition-all shadow-xl"
           >
             PANGGIL DEREK
