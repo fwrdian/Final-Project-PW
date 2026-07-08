@@ -9,7 +9,7 @@ const Testimoni = () => {
 
   // Ambil data dari backend API
   useEffect(() => {
-    axios.get('http://localhost:3000/api/testimoni')
+    axios.get('http://localhost:5000/api/testimoni')
       .then((res) => {
         const formattedData = res.data.map((item, index) => ({
           id: item.id_testimoni,

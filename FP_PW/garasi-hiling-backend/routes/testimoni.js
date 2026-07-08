@@ -17,25 +17,4 @@ router.get('/', async (req, res) => {
         res.status(500).json({ message: 'Gagal mengambil data testimoni', error });
     }
 });
-
-// Endpoint: POST http://localhost:5000/api/testimoni
-router.post('/', async (req, res) => {
-    const { id_user, role_pekerjaan, review, avatar } = req.body;
-
-    if (!id_user || !review) {
-        return res.status(400).json({ message: 'User ID dan isi review wajib diisi!' });
-    }
-
-    try {
-        const queryInsert = `
-            INSERT INTO testimoni (id_user, role_pekerjaan, review, avatar) 
-            VALUES (?, ?, ?, ?)
-        `;
-        await db.query(queryInsert, [id_user, role_pekerjaan || 'Pelanggan', review, avatar || 'foto/supra.jpg']);
-        res.status(201).json({ message: 'Terima kasih! Testimoni Anda berhasil disimpan.' });
-    } catch (error) {
-        res.status(500).json({ message: 'Gagal menyimpan testimoni', error });
-    }
-});
-
 export default router;
